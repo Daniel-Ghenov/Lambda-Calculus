@@ -9,10 +9,17 @@ const std::set<char>& Variable::getBoundVariables() const {
 }
 
 LambdaTerm *Variable::clone() const {
-    return new Variable(this->c);
+    return new Variable(this->var);
 }
 
-Variable::Variable(char c): c(c) {
+Variable::Variable(char c): var(c) {
     this->freeVariables = std::set<char>({c});
     this->boundVariables = std::set<char>();
+}
+
+LambdaTerm *Variable::substitute(char var, const LambdaTerm &term) {
+    if (var != this->var) {
+        return this;
+    }
+    return term.clone();
 }

@@ -26,3 +26,9 @@ const std::set<char> &Application::getBoundVariables() const {
 const std::set<char> &Application::getFreeVariables() const {
     return freeVariables;
 }
+
+LambdaTerm *Application::substitute(char var, const LambdaTerm &term) {
+    term1 = term1->substitute(var, term);
+    term2 = term2->substitute(var, term);
+    return this;
+}
