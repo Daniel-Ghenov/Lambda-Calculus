@@ -10,7 +10,7 @@ private:
 public:
     Abstraction(const LambdaTerm& term, char var);
     ~Abstraction() override;
-    const std::set<char>& getFreeVariables() const override;
-    const std::set<char>& getBoundVariables() const override;
-    LambdaTerm* clone() const override;
+    [[nodiscard]] const std::set<char>& getFreeVariables() const override;
+    [[nodiscard]] const std::set<char>& getBoundVariables() const override;
+    [[nodiscard]] LambdaTerm* clone() const override;
 };

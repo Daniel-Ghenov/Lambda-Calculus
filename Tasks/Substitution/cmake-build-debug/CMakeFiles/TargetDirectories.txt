@@ -1,0 +1,3 @@
+C:/Users/PC-Admin/Desktop/Code/Lambda Calc/Tasks/Substitution/cmake-build-debug/CMakeFiles/Substitution.dir
+C:/Users/PC-Admin/Desktop/Code/Lambda Calc/Tasks/Substitution/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/PC-Admin/Desktop/Code/Lambda Calc/Tasks/Substitution/cmake-build-debug/CMakeFiles/rebuild_cache.dir

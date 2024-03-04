@@ -9,8 +9,8 @@ private:
 public:
     explicit Variable(char c);
     ~Variable() override = default;
-    const std::set<char>& getFreeVariables() const override;
-    const std::set<char>& getBoundVariables() const override;
-    LambdaTerm* clone() const override;
+    [[nodiscard]] const std::set<char>& getFreeVariables() const override;
+    [[nodiscard]] const std::set<char>& getBoundVariables() const override;
+    [[nodiscard]] LambdaTerm* clone() const override;
 };
 

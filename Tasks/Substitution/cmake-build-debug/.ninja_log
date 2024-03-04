@@ -1,0 +1,12 @@
+# ninja log v5
+11	162	7312920558075684	CMakeFiles/Substitution.dir/Terms/Variable.cpp.obj	8ff0211011aa34b0
+16	169	7312920558153178	CMakeFiles/Substitution.dir/Terms/Application.cpp.obj	c8eba6bf1a5c62d6
+1	170	7312920558153178	CMakeFiles/Substitution.dir/Terms/Abstraction.cpp.obj	7d5be37798519fb5
+6	236	7312920558823318	CMakeFiles/Substitution.dir/Solution.cpp.obj	44c91598992c8f26
+7	159	7312921322175734	CMakeFiles/Substitution.dir/Terms/Application.cpp.obj	c8eba6bf1a5c62d6
+2	226	7312921322841848	CMakeFiles/Substitution.dir/Solution.cpp.obj	44c91598992c8f26
+11	161	7312921759991486	CMakeFiles/Substitution.dir/Terms/Variable.cpp.obj	8ff0211011aa34b0
+7	163	7312921760015867	CMakeFiles/Substitution.dir/Terms/Abstraction.cpp.obj	7d5be37798519fb5
+16	169	7312921760075862	CMakeFiles/Substitution.dir/Terms/Application.cpp.obj	c8eba6bf1a5c62d6
+2	230	7312921760690924	CMakeFiles/Substitution.dir/Solution.cpp.obj	44c91598992c8f26
+231	327	7312921761547835	Substitution.exe	b99fdc103b2a8fbd
