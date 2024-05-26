@@ -23,3 +23,7 @@ LambdaTerm *Variable::substitute(char var, const LambdaTerm &term) {
     }
     return term.clone();
 }
+
+void Variable::print() const {
+    std::cout << var;
+}

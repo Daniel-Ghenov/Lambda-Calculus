@@ -5,8 +5,14 @@
 
 int main() {
     Variable variable ('c');
-    Abstraction abstraction (variable, 'c');
-    Application application (variable, abstraction);
+    Variable variable2 ('d');
+    Variable variable3 ('p');
+    Application application1 (variable, variable2);
+    Abstraction abstraction (application1, 'c');
 
+    Abstraction abstraction2 (variable3, 'p');
 
+    abstraction.print();
+    std::cout << std::endl;
+    abstraction.substitute('d', abstraction2)->print();
 }

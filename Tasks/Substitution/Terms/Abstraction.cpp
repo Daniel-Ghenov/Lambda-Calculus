@@ -40,16 +40,14 @@ Abstraction::~Abstraction() {
 
 LambdaTerm *Abstraction::substitute(char var, const LambdaTerm &term) {
     if (this->var == var) {
-        if (!isCatching(var, term)) {
-            this->term = this->term->substitute(var, term);
-        } else {
-            char newVar = findNotUsedVar(term);
-            auto newTerm = term.clone()->substitute(this->var, Variable(newVar));
-            newTerm = newTerm->substitute(var, term);
-            return new Abstraction(newTerm, newVar);
-        }
+        return this;
     }
-    return this;
+
+    char newVar = findNotUsedVar(term);
+    auto newTerm = this->term->clone()->substitute(this->var, Variable(newVar));
+    newTerm = newTerm->substitute(var, term);
+    return new Abstraction(newTerm, newVar);
+
 }
 
 bool Abstraction::isCatching(char var, const LambdaTerm &term) {
@@ -60,7 +58,25 @@ bool Abstraction::isCatching(char var, const LambdaTerm &term) {
 
 char Abstraction::findNotUsedVar(const LambdaTerm& term) {
     auto otherFV = term.getFreeVariables();
+    for(char c = 'a'; c <= 'z'; c++) {
+        if (this->freeVariables.find(c) == freeVariables.end() &&
+            otherFV.find(c) == otherFV.end()) {
+            return c;
+        }
+    }
+
+    for(char c = 'A'; c <= 'Z'; c++) {
+        if (this->freeVariables.find(c) == freeVariables.end() &&
+            otherFV.find(c) == otherFV.end()) {
+            return c;
+        }
+    }
+
     for(char c = 0; c < MAX_CHAR; c++) {
+        if (isAlpha(c)) {
+            continue;
+        }
+
         if (this->freeVariables.find(c) == freeVariables.end() &&
             otherFV.find(c) == otherFV.end()) {
             return c;
@@ -68,5 +84,17 @@ char Abstraction::findNotUsedVar(const LambdaTerm& term) {
     }
     //TODO: fix this char overflow?
     throw std::length_error("Too many variables used in terms");
+}
+
+void Abstraction::print() const {
+    std::cout << "(\\";
+    std::cout << var;
+    std::cout << ".";
+    term->print();
+    std::cout << ")";
+}
+
+int Abstraction::isAlpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 

@@ -32,3 +32,11 @@ LambdaTerm *Application::substitute(char var, const LambdaTerm &term) {
     term2 = term2->substitute(var, term);
     return this;
 }
+
+void Application::print() const {
+    std::cout << "(";
+    term1->print();
+    std::cout << " ";
+    term2->print();
+    std::cout << ")";
+}

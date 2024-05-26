@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include "LambdaTerm.h"
 
 class Application: public LambdaTerm {
@@ -15,4 +16,5 @@ public:
     [[nodiscard]] LambdaTerm *clone() const override;
 
     LambdaTerm *substitute(char var, const LambdaTerm &term) override;
+    void print() const override;
 };

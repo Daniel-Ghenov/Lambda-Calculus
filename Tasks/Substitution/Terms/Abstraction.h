@@ -15,8 +15,10 @@ public:
     [[nodiscard]] const std::set<char>& getBoundVariables() const override;
     [[nodiscard]] LambdaTerm* clone() const override;
     LambdaTerm *substitute(char var, const LambdaTerm &term) override;
+    void print() const override;
 
 private:
     bool isCatching(char var, const LambdaTerm &term);
     char findNotUsedVar(const LambdaTerm& term);
+    static isAlpha(char c);
 };
