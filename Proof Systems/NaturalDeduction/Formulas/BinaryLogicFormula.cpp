@@ -1,6 +1,7 @@
+#include <iostream>
 #include "BinaryLogicFormula.h"
 
-BinaryLogicFormula::BinaryLogicFormula(Formula *left, Formula *right, LogicOperation op): LogicFormula(op), leftOperand(left), rightOperand(right) {}
+BinaryLogicFormula::BinaryLogicFormula(Formula *left, Formula *right, LogicOperation op): LogicFormula(op, FormulaType::BINARY_LOGIC), leftOperand(left), rightOperand(right) {}
 
 Formula *BinaryLogicFormula::clone() const {
     return new BinaryLogicFormula(leftOperand->clone(), rightOperand->clone(), operation);
@@ -21,7 +22,40 @@ Formula *BinaryLogicFormula::getRightOperand() const {
     return rightOperand.get();
 }
 
-LogicOperation BinaryLogicFormula::getOperation() const {
-    return operation;
+bool BinaryLogicFormula::operator==(const Formula &other) const {
+    if (!LogicFormula::operator==(other)) {
+        return false;
+    }
+    auto *otherBinary = dynamic_cast<const BinaryLogicFormula*>(&other);
+    if (otherBinary == nullptr) {
+        return false;
+    }
+    return operation == otherBinary->operation && *leftOperand == *otherBinary->leftOperand && *rightOperand == *otherBinary->rightOperand;
+}
+
+void BinaryLogicFormula::print() const {
+    std::cout << "(";
+    leftOperand->print();
+    switch (operation) {
+        case LogicOperation::AND:
+            std::cout << " & ";
+            break;
+        case LogicOperation::OR:
+            std::cout << " | ";
+            break;
+        case LogicOperation::IMPLIES:
+            std::cout << " -> ";
+            break;
+        case LogicOperation::NOT:
+            break;
+        case LogicOperation::BIDIRECTIONAL_IMPLIES:
+            break;
+        case LogicOperation::FOR_ALL:
+            break;
+        case LogicOperation::EXISTS:
+            break;
+    }
+    rightOperand->print();
+    std::cout << ")";
 }
 
