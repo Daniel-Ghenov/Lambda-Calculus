@@ -30,6 +30,9 @@ bool BinaryLogicFormula::operator==(const Formula &other) const {
     if (otherBinary == nullptr) {
         return false;
     }
+    if (operation == LogicOperation::AND && otherBinary->operation == LogicOperation::AND) {
+        return andEquals(otherBinary);
+    }
     return operation == otherBinary->operation && *leftOperand == *otherBinary->leftOperand && *rightOperand == *otherBinary->rightOperand;
 }
 
@@ -57,5 +60,10 @@ void BinaryLogicFormula::print() const {
     }
     rightOperand->print();
     std::cout << ")";
+}
+
+bool BinaryLogicFormula::andEquals(const BinaryLogicFormula *pFormula) const {
+    return (*leftOperand == *pFormula->leftOperand && *rightOperand == *pFormula->rightOperand) ||
+           (*leftOperand == *pFormula->rightOperand && *rightOperand == *pFormula->leftOperand);
 }
 

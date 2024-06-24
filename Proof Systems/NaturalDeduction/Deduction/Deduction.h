@@ -32,9 +32,15 @@ private:
     void applyUniversalIntroduction(Rule rule);
     void applyUniversalElimination(Rule rule);
 
-    std::vector<std::shared_ptr<Node>>::iterator findAssumption(Formula *ruleAssumed);
 
     void printConclusions();
 
-    std::vector<std::shared_ptr<Node>>::iterator findConclusion(Formula *const pFormula);
+    std::vector<std::shared_ptr<Node>>::iterator findAssumption(Formula *ruleAssumed);
+    std::vector<std::shared_ptr<Node>>::iterator findConclusion(const Formula *pFormula);
+    std::vector<std::shared_ptr<Node>>::iterator findConclusion(const Node *ruleAssumed);
+
+    static void getNodePointingToConclusion(const Formula *conclusion, Node *&node);
+
+    static char getXNotInFormula(const Formula *formula);
+
 };

@@ -14,11 +14,11 @@ int Rule::getRuleArgumentCount() const {
 
 int Rule::getRuleArgumentCountIntroduction() const {
     switch (this->type) {
-        case LogicOperation::AND:
         case LogicOperation::OR:
         case LogicOperation::IMPLIES:
         case LogicOperation::EXISTS:
             return 2;
+        case LogicOperation::AND:
         case LogicOperation::NOT:
         case LogicOperation::FOR_ALL:
             return 1;
@@ -32,10 +32,10 @@ int Rule::getRuleArgumentCountElimination() const {
     switch (this->type) {
         case LogicOperation::AND:
         case LogicOperation::OR:
-        case LogicOperation::IMPLIES:
         case LogicOperation::FOR_ALL:
         case LogicOperation::EXISTS:
             return 2;
+        case LogicOperation::IMPLIES:
         case LogicOperation::NOT:
             return 1;
         default:

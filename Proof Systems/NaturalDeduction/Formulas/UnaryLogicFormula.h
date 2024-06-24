@@ -14,6 +14,9 @@ public:
     [[nodiscard]] Formula *getOperand() const;
     bool operator==(const Formula& other) const override;
     void print() const override;
+
+    static  UnaryLogicFormula* getFalse() { return dynamic_cast< UnaryLogicFormula *>(FALSE.clone()); }
+private:
+    static const UnaryLogicFormula FALSE;
 };
 
-static const UnaryLogicFormula FALSE = UnaryLogicFormula(nullptr);

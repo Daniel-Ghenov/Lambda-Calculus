@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "../Formulas/Formula.h"
+#include "../Formulas/UnaryLogicFormula.h"
 
 class Node
 {

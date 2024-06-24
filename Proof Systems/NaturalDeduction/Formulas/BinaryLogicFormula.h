@@ -17,4 +17,6 @@ public:
     [[nodiscard]] Formula *getRightOperand() const;
     bool operator==(const Formula& other) const override;
     void print() const override;
+
+    bool andEquals(const BinaryLogicFormula *pFormula) const;
 };
