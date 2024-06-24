@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "UnaryLogicFormula.h"
- const UnaryLogicFormula UnaryLogicFormula::FALSE = UnaryLogicFormula(nullptr);
+ const UnaryLogicFormula UnaryLogicFormula::FALSE = UnaryLogicFormula();
 
 UnaryLogicFormula::UnaryLogicFormula(Formula *operand): LogicFormula(LogicOperation::NOT, FormulaType::UNARY_LOGIC), operand(operand) {
 
@@ -31,12 +31,13 @@ bool UnaryLogicFormula::operator==(const Formula &other) const {
     if (otherUnary == nullptr) {
         return false;
     }
-    if (operand == nullptr && otherUnary->operand == nullptr) {
-        return true;
+    if (operand == nullptr) {
+        return otherUnary->operand == nullptr;
     }
-    if (operand == nullptr || otherUnary->operand == nullptr) {
+    if (otherUnary->operand == nullptr) {
         return false;
     }
+
     return operation == otherUnary->operation && *operand == *otherUnary->operand;
 }
 
@@ -45,7 +46,6 @@ void UnaryLogicFormula::print() const {
         std::cout << "FALSE";
         return;
     }
-    std::cout << logicOperationToString(operation) << "(";
+    std::cout << logicOperationToString(operation);
     operand->print();
-    std::cout << ")";
 }

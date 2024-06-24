@@ -11,7 +11,9 @@ enum class LogicOperation
     NOT,
     BIDIRECTIONAL_IMPLIES,
     FOR_ALL,
-    EXISTS
+    EXISTS,
+    SUBSTITUTION,
+    FALSE
 };
 
 std::string logicOperationToString(LogicOperation op);

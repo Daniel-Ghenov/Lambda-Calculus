@@ -21,6 +21,7 @@ int Rule::getRuleArgumentCountIntroduction() const {
         case LogicOperation::AND:
         case LogicOperation::NOT:
         case LogicOperation::FOR_ALL:
+        case LogicOperation::FALSE:
             return 1;
 
         default:
@@ -37,6 +38,7 @@ int Rule::getRuleArgumentCountElimination() const {
             return 2;
         case LogicOperation::IMPLIES:
         case LogicOperation::NOT:
+        case LogicOperation::FALSE:
             return 1;
         default:
             throw std::invalid_argument("Invalid LogicOperation");

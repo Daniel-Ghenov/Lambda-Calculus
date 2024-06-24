@@ -23,4 +23,6 @@ add_executable(NaturalDeduction
         Deduction/Rule.h
         Deduction/Rule.cpp
         Formulas/SubstitutionFormula.h
-        Formulas/SubstitutionFormula.cpp)
+        Formulas/SubstitutionFormula.cpp
+        Formulas/TertiaryLogicFormula.h
+        Formulas/TertiaryLogicFormula.cpp)

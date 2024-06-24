@@ -17,6 +17,7 @@ public:
 
     static  UnaryLogicFormula* getFalse() { return dynamic_cast< UnaryLogicFormula *>(FALSE.clone()); }
 private:
+    UnaryLogicFormula() : LogicFormula(LogicOperation::FALSE, FormulaType::UNARY_LOGIC), operand(nullptr) {}
     static const UnaryLogicFormula FALSE;
 };
 

@@ -43,4 +43,9 @@ private:
 
     static char getXNotInFormula(const Formula *formula);
 
+    void applyFalseIntroduction(Rule rule);
+
+    void applyFalseElimination(Rule rule);
+
+    static bool findFormulaInVector(std::vector<Formula *> vector1, Formula *pFormula);
 };

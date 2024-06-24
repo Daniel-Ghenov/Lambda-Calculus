@@ -1,8 +1,10 @@
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 #include "Deduction.h"
 #include "../Formulas/BinaryLogicFormula.h"
-#include "../Formulas/UnaryLogicFormula.h"
+#include "../Formulas/Variable.h"
+#include "../Formulas/TertiaryLogicFormula.h"
 
 void Deduction::applyRule(Rule rule)
 {
@@ -68,6 +70,15 @@ void Deduction::applyRule(Rule rule)
                     applyExistentialElimination(rule);
                     break;
             }
+        case LogicOperation::FALSE:
+            switch (rule.getResult()) {
+                case RuleResult::INTRODUCTION:
+                    applyFalseIntroduction(rule);
+                    break;
+                case RuleResult::ELIMINATION:
+                    applyFalseElimination(rule);
+                    break;
+            }
             break;
         default:
             throw std::invalid_argument("Invalid LogicOperation");
@@ -115,6 +126,7 @@ void Deduction::applyDisjunctionIntroduction(Rule rule) {
 
     std::shared_ptr<Node> node = std::make_shared<Node>(disjunction->clone());
     leftIter->get()->setNext(node);
+    node->addPrevious(*leftIter);
 
     conclusions.erase(findConclusion(current));
     conclusions.push_back(node);
@@ -162,6 +174,10 @@ void Deduction::applyDisjunctionElimination(Rule rule) {
     nodeRight->setNext(newNode);
     disConclusion->get()->setNext(newNode);
 
+    newNode->addPrevious(*leftIter);
+    newNode->addPrevious(*rightIter);
+    newNode->addPrevious(disConclusion->get());
+
     leftIter->get()->cross();
     rightIter->get()->cross();
     conclusions.push_back(newNode);
@@ -203,6 +219,9 @@ void Deduction::applyConjunctionIntroduction(Rule rule) {
 
     leftIter->get()->setNext(node);
     rightIter->get()->setNext(node);
+
+    node->addPrevious(*leftIter);
+    node->addPrevious(*rightIter);
 
     conclusions.erase(findConclusion(left));
     conclusions.erase(findConclusion(right));
@@ -267,7 +286,9 @@ void Deduction::applyImplicationIntroduction(Rule rule) {
     getNodePointingToConclusion(conclusion, node);
 
     Formula* f = new BinaryLogicFormula(ruleAssumed->clone(), conclusion->clone(), LogicOperation::IMPLIES);
-    node->setNext(new Node(f));
+    std::shared_ptr<Node> newNode = std::make_shared<Node>(f);
+    node->setNext(newNode);
+    newNode->addPrevious(node);
     (*i)->cross();
 
     for (auto i = conclusions.begin(); i != conclusions.end(); i++) {
@@ -315,6 +336,8 @@ void Deduction::applyImplicationElimination(Rule rule) {
     impliedIter->get()->setNext(node);
     conclusions.erase(findConclusion(implied));
 
+    node->addPrevious(*implIter);
+    node->addPrevious(*impliedIter);
 }
 
 void Deduction::applyNegationIntroduction(Rule rule) {
@@ -336,6 +359,7 @@ void Deduction::applyNegationIntroduction(Rule rule) {
     }
 
     node->setNext(conclusion);
+    conclusion->addPrevious(*negationIter);
     negationIter->get()->cross();
     conclusions.erase(findConclusion(negation));
     conclusions.push_back(conclusion);
@@ -367,26 +391,198 @@ void Deduction::applyNegationElimination(Rule rule) {
     std::shared_ptr<Node> node = std::make_shared<Node>(UnaryLogicFormula::getFalse());
 
     contradictionIter->get()->setNext(node);
+    node->addPrevious(*contradictionIter);
     conclusions.erase(findConclusion(contradiction));
     conclusions.push_back(node);
 
 
 }
 
+
+void Deduction::applyFalseIntroduction(Rule rule) {
+    applyNegationElimination(Rule(LogicOperation::NOT, RuleResult::ELIMINATION, {rule.getPremises()[0]}));
+}
+
+void Deduction::applyFalseElimination(Rule rule) {
+    auto falseIter = findConclusion(UnaryLogicFormula::getFalse());
+
+    if (falseIter == conclusions.end()) {
+        throw std::invalid_argument("Invalid false, must be in conclusions");
+    }
+
+    auto falseNode = falseIter->get();
+
+    auto premise = rule.getPremises()[0].get();
+
+    std::shared_ptr<Node> node = std::make_shared<Node>(premise->clone());
+
+    falseNode->setNext(node);
+    node->addPrevious(falseNode);
+    conclusions.erase(falseIter);
+    conclusions.push_back(node);
+}
+
+
 void Deduction::applyExistentialIntroduction(Rule rule) {
+    auto substitution = rule.getPremises()[0].get();
+    auto var = rule.getPremises()[1].get();
+
+    if (substitution->getType() != FormulaType::TERTIARY_LOGIC) {
+        throw std::invalid_argument("Invalid substitution");
+    }
+
+    auto tertiary = dynamic_cast<TertiaryLogicFormula*>(substitution);
+
+    if (tertiary->getOperation() != LogicOperation::SUBSTITUTION) {
+        throw std::invalid_argument("Invalid substitution");
+    }
+
+    auto proposition = tertiary->getMain();
+    auto variable = tertiary->getLeft();
+
+    auto substitutionIter = findConclusion(substitution);
+
+    if (substitutionIter == conclusions.end()) {
+        throw std::invalid_argument("Invalid substitution, must be in conclusions");
+    }
+
+    auto variableIter = findConclusion(var);
+
+    if (variableIter == conclusions.end()) {
+        throw std::invalid_argument("Invalid variable, must be in conclusions");
+    }
+
+    Formula* f = new BinaryLogicFormula(var->clone(), proposition->clone(), LogicOperation::EXISTS);
+    std::shared_ptr<Node> node = std::make_shared<Node>(f);
+
+    substitutionIter->get()->setNext(node);
+    variableIter->get()->setNext(node);
+
+    node->addPrevious(*substitutionIter);
+    node->addPrevious(*variableIter);
+
+    conclusions.erase(findConclusion(substitution));
+    conclusions.erase(findConclusion(var));
+    conclusions.push_back(node);
 
 }
 
 void Deduction::applyExistentialElimination(Rule rule) {
 
+    auto existential = rule.getPremises()[0].get();
+    auto conclusion = rule.getPremises()[1].get();
+
+    if (existential->getType() != FormulaType::BINARY_LOGIC) {
+        throw std::invalid_argument("Invalid existential");
+    }
+
+    auto binary = dynamic_cast<BinaryLogicFormula*>(existential);
+
+    if (binary->getOperation() != LogicOperation::EXISTS) {
+        throw std::invalid_argument("Invalid existential");
+    }
+
+    auto variable = binary->getLeftOperand();
+
+    if (variable->getType() != FormulaType::VARIABLE) {
+        throw std::invalid_argument("Invalid variable");
+    }
+
+    auto var = dynamic_cast<Variable*>(variable);
+
+    auto proposition = binary->getRightOperand();
+
+    auto propositionIter = findAssumption(proposition);
+
+    if (propositionIter == assumptions.end()) {
+        throw std::invalid_argument("Invalid proposition");
+    }
+    Node* node = propositionIter->get();
+    getNodePointingToConclusion(conclusion, node);
+
+    if (node->getFormula()->getFreeVariables().find(var->getVariable()) != node->getFormula()->getFreeVariables().end()) {
+        throw std::invalid_argument("Invalid variable");
+    }
+    std::set<char> pathVariables = node->getFreeVariables();
+    pathVariables.erase(proposition->getFreeVariables().begin(), proposition->getFreeVariables().end());
+    if (pathVariables.find(var->getVariable()) != pathVariables.end()) {
+        throw std::invalid_argument("Invalid variable");
+    }
+
+    std::shared_ptr<Node> newNode = std::make_shared<Node>(conclusion->clone());
+
+    node->setNext(newNode);
+
+    newNode->addPrevious(*propositionIter);
+
+    conclusions.erase(findConclusion(existential));
+    conclusions.erase(findConclusion(node));
+    conclusions.push_back(newNode);
 }
 
 void Deduction::applyUniversalIntroduction(Rule rule) {
+    auto proposition = rule.getPremises()[0].get();
+
+    auto propositionIter = findAssumption(proposition);
+
+    if (propositionIter == assumptions.end()) {
+        throw std::invalid_argument("Invalid proposition");
+    }
+
+    std::set<char> free = proposition->getFreeVariables();
+
+    char x = getXNotInFormula(proposition);
+    Formula* variable = new Variable(x);
+    Formula* universal = new BinaryLogicFormula(variable, proposition->clone(), LogicOperation::FOR_ALL);
+
+    std::shared_ptr<Node> node = std::make_shared<Node>(universal);
+
+    propositionIter->get()->setNext(node);
+    node->addPrevious(*propositionIter);
+
+    conclusions.erase(findConclusion(proposition));
+    conclusions.push_back(node);
 
 }
 
 void Deduction::applyUniversalElimination(Rule rule) {
 
+    auto universal = rule.getPremises()[0].get();
+    auto variable = rule.getPremises()[1].get();
+
+    if (universal->getType() != FormulaType::BINARY_LOGIC) {
+        throw std::invalid_argument("Invalid universal");
+    }
+
+    auto binary = dynamic_cast<BinaryLogicFormula*>(universal);
+
+    if (binary->getOperation() != LogicOperation::FOR_ALL) {
+        throw std::invalid_argument("Invalid universal");
+    }
+
+    auto proposition = binary->getRightOperand();
+    auto forAllVariable = binary->getLeftOperand();
+
+    auto universalIter = findConclusion(universal);
+
+    if (universalIter == conclusions.end()) {
+        throw std::invalid_argument("Invalid universal, must be in conclusions");
+    }
+
+    auto variableIter = findConclusion(variable);
+
+    if (variableIter == conclusions.end()) {
+        throw std::invalid_argument("Invalid variable, must be in conclusions");
+    }
+
+    Formula* f = new TertiaryLogicFormula(proposition->clone(), forAllVariable->clone(), variable->clone());
+    std::shared_ptr<Node> node = std::make_shared<Node>(f);
+
+    universalIter->get()->setNext(node);
+    variableIter->get()->setNext(node);
+
+    node->addPrevious(*universalIter);
+    node->addPrevious(*variableIter);
 }
 
 
@@ -405,14 +601,19 @@ void Deduction::print() {
 
     std::cout<<"Assumptions: [";
     bool first = true;
+    std::vector<Formula*> printed;
     for (const auto& assumption : assumptions) {
-        if (!assumption->isCrossed()){
-            if (!first) {
-                std::cout<<", ";
-            } else {
-                first = false;
+        auto formula = assumption->getFormula();
+        if (!findFormulaInVector(printed, formula)) {
+            if (!assumption->isCrossed()){
+                if (!first) {
+                    std::cout<<", ";
+                } else {
+                    first = false;
+                }
+                formula->print();
+                printed.push_back(formula);
             }
-            assumption->getFormula()->print();
         }
     }
     std::cout<<"]"<<std::endl;
@@ -424,16 +625,19 @@ void Deduction::print() {
 void Deduction::printConclusions() {
     std::cout<<"Conclusions: [";
     bool first = true;
+    std::vector<Formula*> printed;
     for (const auto& conclusion : conclusions) {
-        if (findAssumption(conclusion->getFormula()) == assumptions.end())
-        {
+        auto formula = conclusion->getFormula();
+        if (!findFormulaInVector(printed, formula)) {
             if (!first) {
-                std::cout<<", ";
+                std::cout << ", ";
             } else {
                 first = false;
             }
-            conclusion->getFormula()->print();
+            formula->print();
+            printed.push_back(formula);
         }
+
     }
     std::cout<<"]"<<std::endl<<std::endl;
 }
@@ -484,4 +688,10 @@ char Deduction::getXNotInFormula(const Formula *formula) {
         }
     }
     throw std::invalid_argument("No free variables");
+}
+
+bool Deduction::findFormulaInVector(std::vector<Formula *> vector1, Formula *pFormula) {
+    return std::any_of(vector1.begin(), vector1.end(), [pFormula](Formula *formula) {
+        return *formula == *pFormula;
+    });
 }

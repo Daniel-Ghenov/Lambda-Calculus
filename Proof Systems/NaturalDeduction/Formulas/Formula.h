@@ -6,6 +6,7 @@ enum class FormulaType
     VARIABLE,
     UNARY_LOGIC,
     BINARY_LOGIC,
+    TERTIARY_LOGIC,
     SUBSTITUTION,
 };
 
