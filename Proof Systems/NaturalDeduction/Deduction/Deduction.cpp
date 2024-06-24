@@ -70,6 +70,7 @@ void Deduction::applyRule(Rule rule)
                     applyExistentialElimination(rule);
                     break;
             }
+            break;
         case LogicOperation::FALSE:
             switch (rule.getResult()) {
                 case RuleResult::INTRODUCTION:
@@ -288,15 +289,13 @@ void Deduction::applyImplicationIntroduction(Rule rule) {
     Formula* f = new BinaryLogicFormula(ruleAssumed->clone(), conclusion->clone(), LogicOperation::IMPLIES);
     std::shared_ptr<Node> newNode = std::make_shared<Node>(f);
     node->setNext(newNode);
-    newNode->addPrevious(node);
+
+    auto assumed = findConclusion(node);
+
+    newNode->addPrevious(*assumed);
     (*i)->cross();
 
-    for (auto i = conclusions.begin(); i != conclusions.end(); i++) {
-        if (i->get() == node) {
-            conclusions.erase(i);
-            break;
-        }
-    }
+    conclusions.erase(findConclusion(ruleAssumed));
     conclusions.push_back(node->getNextShared());
 }
 
@@ -410,14 +409,13 @@ void Deduction::applyFalseElimination(Rule rule) {
         throw std::invalid_argument("Invalid false, must be in conclusions");
     }
 
-    auto falseNode = falseIter->get();
 
     auto premise = rule.getPremises()[0].get();
 
     std::shared_ptr<Node> node = std::make_shared<Node>(premise->clone());
 
-    falseNode->setNext(node);
-    node->addPrevious(falseNode);
+    falseIter->get()->setNext(node);
+    node->addPrevious(*falseIter);
     conclusions.erase(falseIter);
     conclusions.push_back(node);
 }
@@ -499,12 +497,14 @@ void Deduction::applyExistentialElimination(Rule rule) {
     }
     Node* node = propositionIter->get();
     getNodePointingToConclusion(conclusion, node);
-
-    if (node->getFormula()->getFreeVariables().find(var->getVariable()) != node->getFormula()->getFreeVariables().end()) {
+    std::set<char> formulaSet = proposition->getFreeVariables();
+    if (formulaSet.find(var->getVariable()) != formulaSet.end()) {
         throw std::invalid_argument("Invalid variable");
     }
     std::set<char> pathVariables = node->getFreeVariables();
-    pathVariables.erase(proposition->getFreeVariables().begin(), proposition->getFreeVariables().end());
+    for (const char& c : proposition->getFreeVariables()) {
+        pathVariables.erase(c);
+    }
     if (pathVariables.find(var->getVariable()) != pathVariables.end()) {
         throw std::invalid_argument("Invalid variable");
     }
@@ -583,6 +583,10 @@ void Deduction::applyUniversalElimination(Rule rule) {
 
     node->addPrevious(*universalIter);
     node->addPrevious(*variableIter);
+
+    conclusions.erase(findConclusion(universal));
+    conclusions.erase(findConclusion(variable));
+    conclusions.push_back(node);
 }
 
 

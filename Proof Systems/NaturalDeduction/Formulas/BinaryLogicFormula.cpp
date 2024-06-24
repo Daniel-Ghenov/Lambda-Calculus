@@ -39,25 +39,7 @@ bool BinaryLogicFormula::operator==(const Formula &other) const {
 void BinaryLogicFormula::print() const {
     std::cout << "(";
     leftOperand->print();
-    switch (operation) {
-        case LogicOperation::AND:
-            std::cout << " & ";
-            break;
-        case LogicOperation::OR:
-            std::cout << " | ";
-            break;
-        case LogicOperation::IMPLIES:
-            std::cout << " -> ";
-            break;
-        case LogicOperation::NOT:
-            break;
-        case LogicOperation::BIDIRECTIONAL_IMPLIES:
-            break;
-        case LogicOperation::FOR_ALL:
-            break;
-        case LogicOperation::EXISTS:
-            break;
-    }
+    std::cout << logicOperationToString(operation);
     rightOperand->print();
     std::cout << ")";
 }

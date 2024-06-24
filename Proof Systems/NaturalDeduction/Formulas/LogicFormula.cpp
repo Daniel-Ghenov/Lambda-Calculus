@@ -15,7 +15,7 @@ std::string logicOperationToString(LogicOperation op)
         case LogicOperation::BIDIRECTIONAL_IMPLIES:
             return "<->";
         case LogicOperation::FOR_ALL:
-            return "A";
+            return "\\/";
         case LogicOperation::EXISTS:
             return "E";
     }

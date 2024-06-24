@@ -1,9 +1,11 @@
 
 #include <memory>
+#include <iostream>
 #include "Deduction/Deduction.h"
 #include "Formulas/Variable.h"
 #include "Formulas/BinaryLogicFormula.h"
 #include "Formulas/UnaryLogicFormula.h"
+#include "Formulas/TertiaryLogicFormula.h"
 
 void test1()
 {
@@ -134,6 +136,126 @@ void test5()
     deduction.print();
 }
 
+void test6()
+{
+    Deduction deduction;
+
+    Formula *a = new Variable('A');
+    std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
+    Formula *x = new Variable('x');
+    std::shared_ptr<Variable> x2 = std::make_shared<Variable>('x');
+
+    Formula* forEachx = new BinaryLogicFormula(x->clone(), a->clone(), LogicOperation::FOR_ALL);
+
+    deduction.addAssumption(a);
+
+    deduction.print();
+
+    Rule rule(LogicOperation::FOR_ALL, RuleResult::INTRODUCTION, {a2});
+
+    deduction.applyRule(rule);
+    deduction.print();
+}
+
+void test7()
+{
+    Deduction deduction;
+
+    Formula *a = new Variable('A');
+    std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
+    Formula *t = new Variable('t');
+    std::shared_ptr<Variable> t2 = std::make_shared<Variable>('t');
+
+    Formula* forEachx = new BinaryLogicFormula(new Variable('x'), a->clone(), LogicOperation::FOR_ALL);
+    std::shared_ptr<BinaryLogicFormula> forEachx2 = std::make_shared<BinaryLogicFormula>(new Variable('x'), a->clone(), LogicOperation::FOR_ALL);
+
+    deduction.addAssumption(t);
+    deduction.addAssumption(forEachx);
+
+    deduction.print();
+
+    Rule rule(LogicOperation::FOR_ALL, RuleResult::ELIMINATION, {forEachx2, t2});
+
+    deduction.applyRule(rule);
+    deduction.print();
+}
+
+void test8()
+{
+    Deduction deduction;
+
+    Formula *a = new Variable('A');
+    std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
+    Formula *x = new Variable('x');
+    std::shared_ptr<Variable> x2 = std::make_shared<Variable>('x');
+    Formula *t = new Variable('t');
+    std::shared_ptr<Variable> t2 = std::make_shared<Variable>('t');
+
+    Formula* aSubstitute = new TertiaryLogicFormula(a->clone(), x->clone(), t->clone());
+    std::shared_ptr<TertiaryLogicFormula> aSubstitute2 = std::make_shared<TertiaryLogicFormula>(a->clone(), x->clone(), t->clone());
+
+    deduction.addAssumption(t);
+    deduction.addAssumption(aSubstitute);
+
+    deduction.print();
+
+    Rule rule(LogicOperation::EXISTS, RuleResult::INTRODUCTION, {aSubstitute2, t2});
+
+    deduction.applyRule(rule);
+    deduction.print();
+}
+
+void test9()
+{
+    Deduction deduction;
+
+    Formula *a = new Variable('A');
+    std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
+    Formula *x = new Variable('x');
+    std::shared_ptr<Variable> x2 = std::make_shared<Variable>('x');
+    Formula *b = new Variable('B');
+    std::shared_ptr<Variable> b2 = std::make_shared<Variable>('B');
+
+    Formula* existsA = new BinaryLogicFormula(x->clone(), a->clone() , LogicOperation::EXISTS);
+    std::shared_ptr<BinaryLogicFormula> existsA2 = std::make_shared<BinaryLogicFormula>(x->clone(), a->clone(), LogicOperation::EXISTS);
+
+    Formula* aOrB = new BinaryLogicFormula(a->clone(), b->clone(), LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
+
+    deduction.addAssumption(a);
+    deduction.addAssumption(existsA);
+
+    deduction.print();
+
+    Rule rule1(LogicOperation::OR , RuleResult::INTRODUCTION, {aOrB2, a2});
+    deduction.applyRule(rule1);
+    deduction.print();
+
+    Rule rule(LogicOperation::EXISTS, RuleResult::ELIMINATION, {existsA2, aOrB2});
+
+    deduction.applyRule(rule);
+    deduction.print();
+}
+
+void test10()
+{
+
+    Deduction deduction;
+
+    Formula *a = new Variable('A');
+    std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
+
+    Formula * falseFormula = UnaryLogicFormula::getFalse();
+
+    deduction.addAssumption(falseFormula);
+
+    Rule rule(LogicOperation::FALSE, RuleResult::ELIMINATION, {a2});
+
+    deduction.applyRule(rule);
+    deduction.print();
+
+}
+
 void provingDeMorgan()
 {
     Deduction deduction;
@@ -212,7 +334,31 @@ void provingDeMorgan()
 int main()
 {
 
+    std::cout << "Test 1" << std::endl;
+    test1();
+    std::cout << "Test 2" << std::endl;
+    test2();
+    std::cout << "Test 3" << std::endl;
+    test3();
+    std::cout << "Test 4" << std::endl;
+    test4();
+    std::cout << "Test 5" << std::endl;
+    test5();
+    std::cout << "Test 6" << std::endl;
+    test6();
+    std::cout << "Test 7" << std::endl;
+    test7();
+    std::cout << "Test 8" << std::endl;
+    test8();
+    std::cout << "Test 9" << std::endl;
+    test9();
+    std::cout << "Test 10" << std::endl;
+    test10();
+
+    std::cout << "Proving De Morgan's Law" << std::endl;
     provingDeMorgan();
+
+
 
     return 0;
 }

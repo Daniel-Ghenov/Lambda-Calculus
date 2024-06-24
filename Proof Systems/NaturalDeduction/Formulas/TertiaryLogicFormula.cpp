@@ -27,9 +27,9 @@ bool TertiaryLogicFormula::operator==(const Formula &other) const {
 
 void TertiaryLogicFormula::print() const {
     main->print();
-    std::cout << "[ ";
+    std::cout << "[";
     left->print();
-    std::cout << " -> ";
+    std::cout << "->";
     right->print();
-    std::cout << " ]";
+    std::cout << "]";
 }
