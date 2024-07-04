@@ -20,9 +20,24 @@ add_executable(NaturalDeduction
         Formulas/LogicFormula.h
         Deduction/Node.h
         Deduction/Node.cpp
-        Deduction/Rule.h
-        Deduction/Rule.cpp
+        Deduction/Rules/Rule.h
+        Deduction/Rules/Rule.cpp
         Formulas/SubstitutionFormula.h
         Formulas/SubstitutionFormula.cpp
         Formulas/TertiaryLogicFormula.h
-        Formulas/TertiaryLogicFormula.cpp)
+        Formulas/TertiaryLogicFormula.cpp
+        Deduction/Rules/DisjunctionRule.h
+        Deduction/Rules/DisjunctionRule.cpp
+        Deduction/Rules/ConjunctionRule.h
+        Deduction/Rules/ConjunctionRule.cpp
+        Deduction/Rules/ImplicationRule.h
+        Deduction/Rules/ImplicationRule.cpp
+        Deduction/Rules/NegationRule.h
+        Deduction/Rules/NegationRule.cpp
+        Deduction/Rules/ExistentialRule.h
+        Deduction/Rules/ExistentialRule.cpp
+        Deduction/Rules/UniversalRule.h
+        Deduction/Rules/UniversalRule.cpp
+        Deduction/Rules/FalseRule.h
+        Deduction/Rules/FalseRule.cpp
+        Deduction/Rules/RuleFactory.h)

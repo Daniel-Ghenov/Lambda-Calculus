@@ -17,8 +17,10 @@ void test1()
     Formula *b = new Variable('B');
 
     Formula *aAndB = new BinaryLogicFormula(a, b, LogicOperation::AND);
-    std::shared_ptr<BinaryLogicFormula> aAndB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::AND);
-    std::shared_ptr<BinaryLogicFormula> aAndB3 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::AND);
+    std::shared_ptr<BinaryLogicFormula> aAndB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                      LogicOperation::AND);
+    std::shared_ptr<BinaryLogicFormula> aAndB3 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                      LogicOperation::AND);
 
     deduction.addAssumption(aAndB);
     deduction.print();
@@ -35,7 +37,8 @@ void test1()
     deduction.print();
 }
 
-void test2(){
+void test2()
+{
     Deduction deduction;
 
     Formula *a = new Variable('A');
@@ -44,7 +47,8 @@ void test2(){
     Formula *b = new Variable('B');
 
     Formula *aImpliesB = new BinaryLogicFormula(a, b, LogicOperation::IMPLIES);
-    std::shared_ptr<BinaryLogicFormula> aImpliesB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::IMPLIES);
+    std::shared_ptr<BinaryLogicFormula> aImpliesB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                          LogicOperation::IMPLIES);
 
     deduction.addAssumption(aImpliesB);
     deduction.addAssumption(aa);
@@ -66,7 +70,8 @@ void test3()
     std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
     Formula *b = new Variable('B');
 
-    std::shared_ptr<BinaryLogicFormula> aAndB = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::AND);
+    std::shared_ptr<BinaryLogicFormula> aAndB = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                     LogicOperation::AND);
 
     deduction.addAssumption(a);
     deduction.addAssumption(b);
@@ -88,7 +93,8 @@ void test4()
     std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
     Formula *b = new Variable('B');
 
-    std::shared_ptr<BinaryLogicFormula> aOrB = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrB = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                    LogicOperation::OR);
 
     deduction.addAssumption(a);
     deduction.print();
@@ -111,10 +117,14 @@ void test5()
     std::shared_ptr<Variable> b2 = std::make_shared<Variable>('B');
 
     Formula *aORB = new BinaryLogicFormula(a->clone(), b->clone(), LogicOperation::OR);
-    std::shared_ptr<BinaryLogicFormula> aOrB = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
-    std::shared_ptr<BinaryLogicFormula> aOrB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
-    std::shared_ptr<BinaryLogicFormula> aOrB3 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
-    std::shared_ptr<BinaryLogicFormula> aOrB4 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrB = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                    LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                     LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrB3 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                     LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrB4 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                     LogicOperation::OR);
 
     deduction.addAssumption(a);
     deduction.addAssumption(b);
@@ -145,13 +155,13 @@ void test6()
     Formula *x = new Variable('x');
     std::shared_ptr<Variable> x2 = std::make_shared<Variable>('x');
 
-    Formula* forEachx = new BinaryLogicFormula(x->clone(), a->clone(), LogicOperation::FOR_ALL);
+    Formula *forEachx = new BinaryLogicFormula(x->clone(), a->clone(), LogicOperation::FOR_EACH);
 
     deduction.addAssumption(a);
 
     deduction.print();
 
-    Rule rule(LogicOperation::FOR_ALL, RuleResult::INTRODUCTION, {a2});
+    Rule rule(LogicOperation::FOR_EACH, RuleResult::INTRODUCTION, {a2});
 
     deduction.applyRule(rule);
     deduction.print();
@@ -166,15 +176,16 @@ void test7()
     Formula *t = new Variable('t');
     std::shared_ptr<Variable> t2 = std::make_shared<Variable>('t');
 
-    Formula* forEachx = new BinaryLogicFormula(new Variable('x'), a->clone(), LogicOperation::FOR_ALL);
-    std::shared_ptr<BinaryLogicFormula> forEachx2 = std::make_shared<BinaryLogicFormula>(new Variable('x'), a->clone(), LogicOperation::FOR_ALL);
+    Formula *forEachx = new BinaryLogicFormula(new Variable('x'), a->clone(), LogicOperation::FOR_EACH);
+    std::shared_ptr<BinaryLogicFormula> forEachx2 = std::make_shared<BinaryLogicFormula>(new Variable('x'), a->clone(),
+                                                                                         LogicOperation::FOR_EACH);
 
     deduction.addAssumption(t);
     deduction.addAssumption(forEachx);
 
     deduction.print();
 
-    Rule rule(LogicOperation::FOR_ALL, RuleResult::ELIMINATION, {forEachx2, t2});
+    Rule rule(LogicOperation::FOR_EACH, RuleResult::ELIMINATION, {forEachx2, t2});
 
     deduction.applyRule(rule);
     deduction.print();
@@ -191,8 +202,9 @@ void test8()
     Formula *t = new Variable('t');
     std::shared_ptr<Variable> t2 = std::make_shared<Variable>('t');
 
-    Formula* aSubstitute = new TertiaryLogicFormula(a->clone(), x->clone(), t->clone());
-    std::shared_ptr<TertiaryLogicFormula> aSubstitute2 = std::make_shared<TertiaryLogicFormula>(a->clone(), x->clone(), t->clone());
+    Formula *aSubstitute = new TertiaryLogicFormula(a->clone(), x->clone(), t->clone());
+    std::shared_ptr<TertiaryLogicFormula> aSubstitute2 = std::make_shared<TertiaryLogicFormula>(a->clone(), x->clone(),
+                                                                                                t->clone());
 
     deduction.addAssumption(t);
     deduction.addAssumption(aSubstitute);
@@ -216,18 +228,20 @@ void test9()
     Formula *b = new Variable('B');
     std::shared_ptr<Variable> b2 = std::make_shared<Variable>('B');
 
-    Formula* existsA = new BinaryLogicFormula(x->clone(), a->clone() , LogicOperation::EXISTS);
-    std::shared_ptr<BinaryLogicFormula> existsA2 = std::make_shared<BinaryLogicFormula>(x->clone(), a->clone(), LogicOperation::EXISTS);
+    Formula *existsA = new BinaryLogicFormula(x->clone(), a->clone(), LogicOperation::EXISTS);
+    std::shared_ptr<BinaryLogicFormula> existsA2 = std::make_shared<BinaryLogicFormula>(x->clone(), a->clone(),
+                                                                                        LogicOperation::EXISTS);
 
-    Formula* aOrB = new BinaryLogicFormula(a->clone(), b->clone(), LogicOperation::OR);
-    std::shared_ptr<BinaryLogicFormula> aOrB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
+    Formula *aOrB = new BinaryLogicFormula(a->clone(), b->clone(), LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrB2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                     LogicOperation::OR);
 
     deduction.addAssumption(a);
     deduction.addAssumption(existsA);
 
     deduction.print();
 
-    Rule rule1(LogicOperation::OR , RuleResult::INTRODUCTION, {aOrB2, a2});
+    Rule rule1(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB2, a2});
     deduction.applyRule(rule1);
     deduction.print();
 
@@ -245,7 +259,7 @@ void test10()
     Formula *a = new Variable('A');
     std::shared_ptr<Variable> a2 = std::make_shared<Variable>('A');
 
-    Formula * falseFormula = UnaryLogicFormula::getFalse();
+    Formula *falseFormula = UnaryLogicFormula::getFalse();
 
     deduction.addAssumption(falseFormula);
 
@@ -267,8 +281,10 @@ void provingDeMorgan()
     std::shared_ptr<Variable> b2 = std::make_shared<Variable>('B');
 
     Formula *aOrB = new BinaryLogicFormula(a->clone(), b->clone(), LogicOperation::OR);
-    std::shared_ptr<BinaryLogicFormula> aOrBShared = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
-    std::shared_ptr<BinaryLogicFormula> aOrBShared2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrBShared = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                          LogicOperation::OR);
+    std::shared_ptr<BinaryLogicFormula> aOrBShared2 = std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(),
+                                                                                           LogicOperation::OR);
     Formula *notAOrB = new UnaryLogicFormula(aOrB->clone());
     std::shared_ptr<UnaryLogicFormula> notAorBShared = std::make_shared<UnaryLogicFormula>(aOrB->clone());
     Formula *notAOrB2 = new UnaryLogicFormula(aOrB->clone());
@@ -282,14 +298,17 @@ void provingDeMorgan()
     deduction.applyRule(rule);
     deduction.print();
 
-    std::shared_ptr<BinaryLogicFormula> notAorBSharedAndAorB = std::make_shared<BinaryLogicFormula>(notAOrB->clone(), aOrB->clone(), LogicOperation::AND);
+    std::shared_ptr<BinaryLogicFormula> notAorBSharedAndAorB = std::make_shared<BinaryLogicFormula>(notAOrB->clone(),
+                                                                                                    aOrB->clone(),
+                                                                                                    LogicOperation::AND);
     Rule rule2(LogicOperation::AND, RuleResult::INTRODUCTION, {notAorBSharedAndAorB});
 
 
     deduction.applyRule(rule2);
     deduction.print();
 
-    Rule rule3(LogicOperation::NOT, RuleResult::ELIMINATION, {std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR)});
+    Rule rule3(LogicOperation::NOT, RuleResult::ELIMINATION,
+               {std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR)});
 
     deduction.applyRule(rule3);
     deduction.print();
@@ -306,14 +325,17 @@ void provingDeMorgan()
     deduction.applyRule(rule5);
     deduction.print();
 
-    std::shared_ptr<BinaryLogicFormula> notAorBSharedAndAorB2 = std::make_shared<BinaryLogicFormula>(notAOrB->clone(), aOrB->clone(), LogicOperation::AND);
+    std::shared_ptr<BinaryLogicFormula> notAorBSharedAndAorB2 = std::make_shared<BinaryLogicFormula>(notAOrB->clone(),
+                                                                                                     aOrB->clone(),
+                                                                                                     LogicOperation::AND);
     Rule rule6(LogicOperation::AND, RuleResult::INTRODUCTION, {notAorBSharedAndAorB});
 
 
     deduction.applyRule(rule6);
     deduction.print();
 
-    Rule rule7(LogicOperation::NOT, RuleResult::ELIMINATION, {std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR)});
+    Rule rule7(LogicOperation::NOT, RuleResult::ELIMINATION,
+               {std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR)});
 
     deduction.applyRule(rule7);
     deduction.print();
@@ -323,7 +345,8 @@ void provingDeMorgan()
     deduction.applyRule(rule8);
     deduction.print();
 
-    std::shared_ptr<BinaryLogicFormula> notAAndNotB = std::make_shared<BinaryLogicFormula>(new UnaryLogicFormula(a->clone()), new UnaryLogicFormula(b->clone()), LogicOperation::AND);
+    std::shared_ptr<BinaryLogicFormula> notAAndNotB = std::make_shared<BinaryLogicFormula>(
+            new UnaryLogicFormula(a->clone()), new UnaryLogicFormula(b->clone()), LogicOperation::AND);
 
     Rule rule9(LogicOperation::AND, RuleResult::INTRODUCTION, {notAAndNotB});
 
@@ -357,7 +380,6 @@ int main()
 
     std::cout << "Proving De Morgan's Law" << std::endl;
     provingDeMorgan();
-
 
 
     return 0;
