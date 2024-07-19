@@ -9,7 +9,6 @@ private:
 public:
     static std::shared_ptr<Rule> createRule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>>&& premises);
 
-    std::shared_ptr<Rule>
-    createRule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
+    static std::shared_ptr<Rule> createRule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
                std::vector<char> &&markers);
 };

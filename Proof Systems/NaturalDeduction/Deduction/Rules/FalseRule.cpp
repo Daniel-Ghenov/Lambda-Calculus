@@ -2,14 +2,13 @@
 #include "FalseRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
 
-FalseRule::FalseRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) :
-        Rule(LogicOperation::FALSE,
-             result,
-             std::move(premises),
-             getArgumentCount(
-                     result,
-                     argumentCountIntroduction,
-                     argumentCountElimination))
+FalseRule::FalseRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(LogicOperation::FALSE,
+                                                                                                 result,
+                                                                                                 std::move(premises),
+                                                                                                 getArgumentCount(
+                                                                                                         result,
+                                                                                                         argumentCountIntroduction,
+                                                                                                         argumentCountElimination))
 {
 
 }

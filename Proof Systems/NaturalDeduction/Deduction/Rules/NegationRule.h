@@ -12,5 +12,6 @@ private:
     static const int argumentCountElimination = 1;
 public:
     NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
+    NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, std::vector<char> &&markers);
 };
 

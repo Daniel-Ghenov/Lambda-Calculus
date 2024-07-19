@@ -2,9 +2,9 @@
 #include "ImplicationRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
 
-ImplicationRule::ImplicationRule(std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
-        LogicOperation::IMPLIES, RuleResult::ELIMINATION, std::move(premises),
-        argumentCountElimination)
+ImplicationRule::ImplicationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
+        LogicOperation::IMPLIES, result, std::move(premises),
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
 
 }
@@ -12,7 +12,7 @@ ImplicationRule::ImplicationRule(std::vector<std::shared_ptr<Formula>> &&premise
 ImplicationRule::ImplicationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
                                  std::vector<char> &&markers) : Rule(
         LogicOperation::IMPLIES, result, std::move(premises), std::move(markers),
-        getArgumentCount(RuleResult::INTRODUCTION, argumentCountIntroduction, argumentCountElimination))
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
 
 }
@@ -23,7 +23,6 @@ void ImplicationRule::applyIntroduction(Deduction &deduction) const
     const auto ruleAssumed = premises[0].get();
     const auto conclusion = premises[1].get();
 
-    const char marker = markers[0];
 
     auto i = deduction.findAssumption(ruleAssumed);
 
@@ -41,7 +40,13 @@ void ImplicationRule::applyIntroduction(Deduction &deduction) const
     auto assumed = deduction.findConclusion(node);
 
     newNode->addPrevious(*assumed);
-    deduction.crossAssumptionsWithMarker(f, marker);
+    if (!markers.empty())
+    {
+        const char marker = markers[0];
+        deduction.crossAssumptionsWithMarker(ruleAssumed, marker);
+    } else {
+        (*i)->cross();
+    }
 
     deduction.conclusions.erase(deduction.findConclusion(ruleAssumed));
     deduction.conclusions.push_back(node->getNextShared());

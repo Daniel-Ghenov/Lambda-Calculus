@@ -15,6 +15,8 @@ std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult res
     {
         case LogicOperation::AND:
             return std::make_shared<ConjunctionRule>(result, std::move(premises));
+        case LogicOperation::IMPLIES:
+            return std::make_shared<ImplicationRule>(result, std::move(premises));
         case LogicOperation::OR:
             return std::make_shared<DisjunctionRule>(result, std::move(premises));
         case LogicOperation::NOT:
@@ -36,6 +38,12 @@ std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult res
 {
     switch (type)
     {
+        case LogicOperation::OR:
+            return std::make_shared<DisjunctionRule>(result, std::move(premises), std::move(markers));
+        case LogicOperation::EXISTS:
+            return std::make_shared<ExistentialRule>(result, std::move(premises), std::move(markers));
+        case LogicOperation::NOT:
+            return std::make_shared<NegationRule>(result, std::move(premises), std::move(markers));
         case LogicOperation::IMPLIES:
             return std::make_shared<ImplicationRule>(result, std::move(premises), std::move(markers));
         case LogicOperation::SUBSTITUTION:

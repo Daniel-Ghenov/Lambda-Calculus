@@ -7,6 +7,15 @@ DisjunctionRule::DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<
         LogicOperation::OR, result, std::move(premises),
         getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
+
+}
+
+DisjunctionRule::DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
+                                 std::vector<char> &&markers): Rule(
+        LogicOperation::OR, result, std::move(premises), std::move(markers),
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
+{
+
 }
 
 void DisjunctionRule::applyElimination(Deduction &deduction) const
@@ -61,8 +70,15 @@ void DisjunctionRule::applyElimination(Deduction &deduction) const
     newNode->addPrevious(*rightIter);
     newNode->addPrevious(disConclusion->get());
 
-    leftIter->get()->cross();
-    rightIter->get()->cross();
+    if (markers.empty()){
+        leftIter->get()->cross();
+        rightIter->get()->cross();
+    } else {
+        auto leftMarker = markers[0];
+        auto rightMarker = markers[1];
+        deduction.crossAssumptionsWithMarker(left, leftMarker);
+        deduction.crossAssumptionsWithMarker(right, rightMarker);
+    }
     deduction.conclusions.push_back(newNode);
 
     deduction.conclusions.erase(deduction.findConclusion(disjunction));

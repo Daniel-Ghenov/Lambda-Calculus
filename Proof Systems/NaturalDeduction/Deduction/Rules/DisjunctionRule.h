@@ -13,5 +13,5 @@ private:
 
 public:
     DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
-
+    DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, std::vector<char> &&markers);
 };

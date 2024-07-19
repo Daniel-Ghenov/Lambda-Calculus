@@ -9,6 +9,16 @@ ExistentialRule::ExistentialRule(RuleResult result, std::vector<std::shared_ptr<
         LogicOperation::EXISTS, result, std::move(premises),
         getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
+
+}
+
+ExistentialRule::ExistentialRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
+                                 std::vector<char> &&markers) : Rule(LogicOperation::EXISTS, result,
+                                                                     std::move(premises), std::move(markers),
+                                                                     getArgumentCount(result, argumentCountIntroduction,
+                                                                                      argumentCountElimination))
+{
+
 }
 
 void ExistentialRule::applyIntroduction(Deduction &deduction) const
@@ -114,8 +124,16 @@ void ExistentialRule::applyElimination(Deduction &deduction) const
     std::shared_ptr<Node> newNode = std::make_shared<Node>(conclusion->clone());
 
     node->setNext(newNode);
+    newNode->addPrevious(node);
 
-    newNode->addPrevious(*propositionIter);
+    if (!markers.empty())
+    {
+        deduction.crossAssumptionsWithMarker(proposition, markers[0]);
+    }
+    else
+    {
+        propositionIter->get()->cross();
+    }
 
     deduction.conclusions.erase(deduction.findConclusion(existential));
     deduction.conclusions.erase(deduction.findConclusion(node));

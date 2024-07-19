@@ -291,7 +291,7 @@ void provingDeMorgan()
     Formula *notAOrB2 = new UnaryLogicFormula(aOrB->clone());
 
     deduction.addAssumption(a);
-    deduction.addAssumption(notAOrB2);
+    deduction.addAssumptionWithMarker(notAOrB, 'a');
 
     std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrBShared, a2});
     deduction.print();
@@ -320,7 +320,7 @@ void provingDeMorgan()
     rule4->apply(deduction);
     deduction.print();
     deduction.addAssumption(b);
-//    deduction.addAssumption(notAOrB);
+    deduction.addAssumptionWithMarker(notAOrB, 'a');
 
     std::shared_ptr<Rule> rule5 = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrBShared, b2});
 
@@ -360,7 +360,7 @@ void provingDeMorgan()
             new UnaryLogicFormula(a->clone()), new UnaryLogicFormula(b->clone()), LogicOperation::AND);
     std::shared_ptr<UnaryLogicFormula> notAOrB3 = std::make_shared<UnaryLogicFormula>(aOrB->clone());
 
-    std::shared_ptr<Rule> rule10 = RuleFactory::createRule(LogicOperation::IMPLIES, RuleResult::INTRODUCTION, {notAOrB3, notAAndNotB2});
+    std::shared_ptr<Rule> rule10 = RuleFactory::createRule(LogicOperation::IMPLIES, RuleResult::INTRODUCTION, {notAOrB3, notAAndNotB2}, {'a'});
 
     rule10->apply(deduction);
     deduction.print();
@@ -369,26 +369,26 @@ void provingDeMorgan()
 int main()
 {
 
-//    std::cout << "Test 1" << std::endl;
-//    test1();
-//    std::cout << "Test 2" << std::endl;
-//    test2();
-//    std::cout << "Test 3" << std::endl;
-//    test3();
-//    std::cout << "Test 4" << std::endl;
-//    test4();
-//    std::cout << "Test 5" << std::endl;
-//    test5();
-//    std::cout << "Test 6" << std::endl;
-//    test6();
-//    std::cout << "Test 7" << std::endl;
-//    test7();
-//    std::cout << "Test 8" << std::endl;
-//    test8();
-//    std::cout << "Test 9" << std::endl;
-//    test9();
-//    std::cout << "Test 10" << std::endl;
-//    test10();
+    std::cout << "Test 1" << std::endl;
+    test1();
+    std::cout << "Test 2" << std::endl;
+    test2();
+    std::cout << "Test 3" << std::endl;
+    test3();
+    std::cout << "Test 4" << std::endl;
+    test4();
+    std::cout << "Test 5" << std::endl;
+    test5();
+    std::cout << "Test 6" << std::endl;
+    test6();
+    std::cout << "Test 7" << std::endl;
+    test7();
+    std::cout << "Test 8" << std::endl;
+    test8();
+    std::cout << "Test 9" << std::endl;
+    test9();
+    std::cout << "Test 10" << std::endl;
+    test10();
 
     std::cout << "Proving De Morgan's Law" << std::endl;
     provingDeMorgan();

@@ -13,6 +13,18 @@ Rule::Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<F
     }
 }
 
+Rule::Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
+           std::vector<char>&& markers, int premiseSize): type(type),
+                                                          result(result),
+                                                          premises(std::move(premises)),
+                                                          markers(std::move(markers))
+{
+    if (this->premises.size() != premiseSize)
+    {
+        throw std::invalid_argument("Invalid number of premises");
+    }
+}
+
 LogicOperation Rule::getType() const
 {
     return type;
@@ -53,17 +65,5 @@ int Rule::getArgumentCount(RuleResult result, int introductionCount, int elimina
             return eliminationCount;
         default:
             throw std::invalid_argument("Invalid RuleResult");
-    }
-}
-
-Rule::Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
-           std::vector<char>&& markers, int premiseSize): type(type),
-                                                        result(result),
-                                                        premises(std::move(premises)),
-                                                        markers(std::move(markers))
-{
-    if (this->premises.size() != premiseSize)
-    {
-        throw std::invalid_argument("Invalid number of premises");
     }
 }

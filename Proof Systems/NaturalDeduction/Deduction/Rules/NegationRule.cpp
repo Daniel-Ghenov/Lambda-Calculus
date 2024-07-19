@@ -6,8 +6,17 @@ NegationRule::NegationRule(RuleResult result, std::vector<std::shared_ptr<Formul
         LogicOperation::NOT, result, std::move(premises),
         getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
+
 }
 
+
+NegationRule::NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
+                           std::vector<char> &&markers): Rule(LogicOperation::NOT, result, std::move(premises),
+                                                              std::move(markers),
+                                                              getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
+{
+
+}
 
 void NegationRule::applyIntroduction(Deduction &deduction) const
 {
@@ -20,18 +29,24 @@ void NegationRule::applyIntroduction(Deduction &deduction) const
     std::shared_ptr<Node> conclusion;
     if (negation->getType() == FormulaType::UNARY_LOGIC)
     {
-
         auto unary = dynamic_cast<UnaryLogicFormula *>(negation);
-
         conclusion = std::make_shared<Node>(unary->getOperand());
     } else
     {
         conclusion = std::make_shared<Node>(new UnaryLogicFormula(negation->clone()));
     }
 
+    if (!markers.empty())
+    {
+        auto marker = markers[0];
+        deduction.crossAssumptionsWithMarker(negation, marker);
+    } else
+    {
+        negationIter->get()->cross();
+    }
+
     node->setNext(conclusion);
     conclusion->addPrevious(*negationIter);
-    negationIter->get()->cross();
     deduction.conclusions.erase(deduction.findConclusion(negation));
     deduction.conclusions.push_back(conclusion);
 }
