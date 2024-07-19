@@ -1,4 +1,4 @@
-
+#pragma once
 #include <vector>
 #include <memory>
 #include "../../Formulas/LogicFormula.h"
@@ -13,21 +13,20 @@ enum class RuleResult
 class Rule
 {
 protected:
+
     LogicOperation type;
     RuleResult result;
     std::vector<std::shared_ptr<Formula>> premises;
-
-    [[nodiscard]] virtual int getRuleArgumentCountIntroduction() const = 0;
-
-    [[nodiscard]] virtual int getRuleArgumentCountElimination() const = 0;
+    std::vector<char> markers = {};
 
     virtual void applyIntroduction(Deduction &deduction) const = 0;
-
     virtual void applyElimination(Deduction &deduction) const = 0;
-    Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
+    Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, int permiseSize);
+    Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, std::vector<char>&& markers, int permiseSize);
+
+    static int getArgumentCount(RuleResult, int introductionCount, int eliminationCount);
 
 public:
-    [[nodiscard]] int getRuleArgumentCount() const;
 
     [[nodiscard]] LogicOperation getType() const;
     [[nodiscard]] RuleResult getResult() const;

@@ -4,19 +4,9 @@
 #include "../Node.h"
 
 DisjunctionRule::DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
-        LogicOperation::OR, result, std::move(premises))
+        LogicOperation::OR, result, std::move(premises),
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
-
-}
-
-int DisjunctionRule::getRuleArgumentCountIntroduction() const
-{
-    return 2;
-}
-
-int DisjunctionRule::getRuleArgumentCountElimination() const
-{
-    return 2;
 }
 
 void DisjunctionRule::applyElimination(Deduction &deduction) const
@@ -100,8 +90,7 @@ void DisjunctionRule::applyIntroduction(Deduction &deduction) const
     auto left = binary->getLeftOperand();
     auto right = binary->getRightOperand();
 
-    if (!(*left == *current) &&
-        !(*right == *current))
+    if (!(*left == *current) && !(*right == *current))
     {
         throw std::invalid_argument("Invalid current");
     }

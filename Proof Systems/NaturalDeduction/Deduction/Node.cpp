@@ -1,5 +1,13 @@
 #include "Node.h"
 
+Node::Node(Formula *f) : formula(f), next(nullptr), previous()
+{
+}
+
+Node::Node(Formula *f, char marker): formula(f), next(nullptr), previous(), marker(marker)
+{
+}
+
 Formula *Node::getFormula() const
 {
     return formula.get();
@@ -59,4 +67,19 @@ std::set<char> Node::getFreeVariables() const
         freeVariables.insert(prevFreeVariables.begin(), prevFreeVariables.end());
     }
     return freeVariables;
+}
+
+char Node::getMarker() const
+{
+    return marker;
+}
+
+void Node::setMarker(char marker)
+{
+    Node::marker = marker;
+}
+
+bool Node::hasMarker() const
+{
+    return marker;
 }

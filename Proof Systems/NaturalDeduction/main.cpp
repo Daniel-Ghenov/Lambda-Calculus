@@ -6,6 +6,7 @@
 #include "Formulas/BinaryLogicFormula.h"
 #include "Formulas/UnaryLogicFormula.h"
 #include "Formulas/TertiaryLogicFormula.h"
+#include "Deduction/Rules/RuleFactory.h"
 
 void test1()
 {
@@ -25,15 +26,15 @@ void test1()
     deduction.addAssumption(aAndB);
     deduction.print();
 
-    Rule rule(LogicOperation::AND, RuleResult::ELIMINATION, {aAndB2, a2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::AND, RuleResult::ELIMINATION, {aAndB2, a2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
 
 
     deduction.print();
 
-    Rule rule1(LogicOperation::IMPLIES, RuleResult::INTRODUCTION, {aAndB3, a3});
-    deduction.applyRule(rule1);
+    std::shared_ptr<Rule> rule1 = RuleFactory::createRule(LogicOperation::IMPLIES, RuleResult::INTRODUCTION, {aAndB3, a3});
+    rule1->apply(deduction);
     deduction.print();
 }
 
@@ -54,9 +55,9 @@ void test2()
     deduction.addAssumption(aa);
     deduction.print();
 
-    Rule rule(LogicOperation::IMPLIES, RuleResult::ELIMINATION, {aImpliesB2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::IMPLIES, RuleResult::ELIMINATION, {aImpliesB2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
 
 
     deduction.print();
@@ -77,9 +78,9 @@ void test3()
     deduction.addAssumption(b);
     deduction.print();
 
-    Rule rule(LogicOperation::AND, RuleResult::INTRODUCTION, {aAndB});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::AND, RuleResult::INTRODUCTION, {aAndB});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
 
 
     deduction.print();
@@ -99,9 +100,9 @@ void test4()
     deduction.addAssumption(a);
     deduction.print();
 
-    Rule rule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB, a2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB, a2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
 
 
     deduction.print();
@@ -131,18 +132,18 @@ void test5()
     deduction.addAssumption(aORB);
     deduction.print();
 
-    Rule rule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB, a2});
-    Rule rule2(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB2, b2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB, a2});
+    std::shared_ptr<Rule> rule2 = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB2, b2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
     deduction.print();
 
-    deduction.applyRule(rule2);
+    rule2->apply(deduction);
     deduction.print();
 
-    Rule rule3(LogicOperation::OR, RuleResult::ELIMINATION, {aOrB3, aOrB4});
+    std::shared_ptr<Rule> rule3 = RuleFactory::createRule(LogicOperation::OR, RuleResult::ELIMINATION, {aOrB3, aOrB4});
 
-    deduction.applyRule(rule3);
+    rule3->apply(deduction);
     deduction.print();
 }
 
@@ -161,9 +162,9 @@ void test6()
 
     deduction.print();
 
-    Rule rule(LogicOperation::FOR_EACH, RuleResult::INTRODUCTION, {a2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::FOR_EACH, RuleResult::INTRODUCTION, {a2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
     deduction.print();
 }
 
@@ -185,9 +186,9 @@ void test7()
 
     deduction.print();
 
-    Rule rule(LogicOperation::FOR_EACH, RuleResult::ELIMINATION, {forEachx2, t2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::FOR_EACH, RuleResult::ELIMINATION, {forEachx2, t2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
     deduction.print();
 }
 
@@ -211,9 +212,9 @@ void test8()
 
     deduction.print();
 
-    Rule rule(LogicOperation::EXISTS, RuleResult::INTRODUCTION, {aSubstitute2, t2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::EXISTS, RuleResult::INTRODUCTION, {aSubstitute2, t2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
     deduction.print();
 }
 
@@ -241,13 +242,13 @@ void test9()
 
     deduction.print();
 
-    Rule rule1(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB2, a2});
-    deduction.applyRule(rule1);
+    std::shared_ptr<Rule> rule1 = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrB2, a2});
+    rule1->apply(deduction);
     deduction.print();
 
-    Rule rule(LogicOperation::EXISTS, RuleResult::ELIMINATION, {existsA2, aOrB2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::EXISTS, RuleResult::ELIMINATION, {existsA2, aOrB2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
     deduction.print();
 }
 
@@ -263,9 +264,9 @@ void test10()
 
     deduction.addAssumption(falseFormula);
 
-    Rule rule(LogicOperation::FALSE, RuleResult::ELIMINATION, {a2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::FALSE, RuleResult::ELIMINATION, {a2});
 
-    deduction.applyRule(rule);
+    rule->apply(deduction);
     deduction.print();
 
 }
@@ -292,91 +293,102 @@ void provingDeMorgan()
     deduction.addAssumption(a);
     deduction.addAssumption(notAOrB2);
 
-    Rule rule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrBShared, a2});
+    std::shared_ptr<Rule> rule = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrBShared, a2});
     deduction.print();
 
-    deduction.applyRule(rule);
+
+    rule->apply(deduction);
     deduction.print();
 
     std::shared_ptr<BinaryLogicFormula> notAorBSharedAndAorB = std::make_shared<BinaryLogicFormula>(notAOrB->clone(),
                                                                                                     aOrB->clone(),
                                                                                                     LogicOperation::AND);
-    Rule rule2(LogicOperation::AND, RuleResult::INTRODUCTION, {notAorBSharedAndAorB});
+    std::shared_ptr<Rule> rule2 = RuleFactory::createRule(LogicOperation::AND, RuleResult::INTRODUCTION, {notAorBSharedAndAorB});
 
 
-    deduction.applyRule(rule2);
+    rule2->apply(deduction);
     deduction.print();
 
-    Rule rule3(LogicOperation::NOT, RuleResult::ELIMINATION,
+    std::shared_ptr<Rule> rule3 = RuleFactory::createRule(LogicOperation::NOT, RuleResult::ELIMINATION,
                {std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR)});
 
-    deduction.applyRule(rule3);
+    rule3->apply(deduction);
     deduction.print();
 
-    Rule rule4(LogicOperation::NOT, RuleResult::INTRODUCTION, {std::make_shared<Variable>(a->getVariable())});
+    std::shared_ptr<Rule> rule4 = RuleFactory::createRule(LogicOperation::NOT, RuleResult::INTRODUCTION, {std::make_shared<Variable>(a->getVariable())});
 
-    deduction.applyRule(rule4);
+    rule4->apply(deduction);
     deduction.print();
     deduction.addAssumption(b);
-    deduction.addAssumption(notAOrB);
+//    deduction.addAssumption(notAOrB);
 
-    Rule rule5(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrBShared, b2});
+    std::shared_ptr<Rule> rule5 = RuleFactory::createRule(LogicOperation::OR, RuleResult::INTRODUCTION, {aOrBShared, b2});
 
-    deduction.applyRule(rule5);
+    rule5->apply(deduction);
     deduction.print();
 
     std::shared_ptr<BinaryLogicFormula> notAorBSharedAndAorB2 = std::make_shared<BinaryLogicFormula>(notAOrB->clone(),
                                                                                                      aOrB->clone(),
                                                                                                      LogicOperation::AND);
-    Rule rule6(LogicOperation::AND, RuleResult::INTRODUCTION, {notAorBSharedAndAorB});
+    std::shared_ptr<Rule> rule6 = RuleFactory::createRule(LogicOperation::AND, RuleResult::INTRODUCTION, {notAorBSharedAndAorB2});
 
 
-    deduction.applyRule(rule6);
+    rule6->apply(deduction);
     deduction.print();
 
-    Rule rule7(LogicOperation::NOT, RuleResult::ELIMINATION,
+    std::shared_ptr<Rule> rule7 = RuleFactory::createRule(LogicOperation::NOT, RuleResult::ELIMINATION,
                {std::make_shared<BinaryLogicFormula>(a->clone(), b->clone(), LogicOperation::OR)});
 
-    deduction.applyRule(rule7);
+    rule7->apply(deduction);
     deduction.print();
 
-    Rule rule8(LogicOperation::NOT, RuleResult::INTRODUCTION, {std::make_shared<Variable>(b->getVariable())});
+    std::shared_ptr<Rule> rule8 = RuleFactory::createRule(LogicOperation::NOT, RuleResult::INTRODUCTION, {std::make_shared<Variable>(b->getVariable())});
 
-    deduction.applyRule(rule8);
+    rule8->apply(deduction);
     deduction.print();
 
     std::shared_ptr<BinaryLogicFormula> notAAndNotB = std::make_shared<BinaryLogicFormula>(
             new UnaryLogicFormula(a->clone()), new UnaryLogicFormula(b->clone()), LogicOperation::AND);
 
-    Rule rule9(LogicOperation::AND, RuleResult::INTRODUCTION, {notAAndNotB});
+    std::shared_ptr<Rule> rule9 = RuleFactory::createRule(LogicOperation::AND, RuleResult::INTRODUCTION, {notAAndNotB});
 
-    deduction.applyRule(rule9);
+
+    rule9->apply(deduction);
+    deduction.print();
+
+    std::shared_ptr<BinaryLogicFormula> notAAndNotB2 = std::make_shared<BinaryLogicFormula>(
+            new UnaryLogicFormula(a->clone()), new UnaryLogicFormula(b->clone()), LogicOperation::AND);
+    std::shared_ptr<UnaryLogicFormula> notAOrB3 = std::make_shared<UnaryLogicFormula>(aOrB->clone());
+
+    std::shared_ptr<Rule> rule10 = RuleFactory::createRule(LogicOperation::IMPLIES, RuleResult::INTRODUCTION, {notAOrB3, notAAndNotB2});
+
+    rule10->apply(deduction);
     deduction.print();
 }
 
 int main()
 {
 
-    std::cout << "Test 1" << std::endl;
-    test1();
-    std::cout << "Test 2" << std::endl;
-    test2();
-    std::cout << "Test 3" << std::endl;
-    test3();
-    std::cout << "Test 4" << std::endl;
-    test4();
-    std::cout << "Test 5" << std::endl;
-    test5();
-    std::cout << "Test 6" << std::endl;
-    test6();
-    std::cout << "Test 7" << std::endl;
-    test7();
-    std::cout << "Test 8" << std::endl;
-    test8();
-    std::cout << "Test 9" << std::endl;
-    test9();
-    std::cout << "Test 10" << std::endl;
-    test10();
+//    std::cout << "Test 1" << std::endl;
+//    test1();
+//    std::cout << "Test 2" << std::endl;
+//    test2();
+//    std::cout << "Test 3" << std::endl;
+//    test3();
+//    std::cout << "Test 4" << std::endl;
+//    test4();
+//    std::cout << "Test 5" << std::endl;
+//    test5();
+//    std::cout << "Test 6" << std::endl;
+//    test6();
+//    std::cout << "Test 7" << std::endl;
+//    test7();
+//    std::cout << "Test 8" << std::endl;
+//    test8();
+//    std::cout << "Test 9" << std::endl;
+//    test9();
+//    std::cout << "Test 10" << std::endl;
+//    test10();
 
     std::cout << "Proving De Morgan's Law" << std::endl;
     provingDeMorgan();

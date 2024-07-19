@@ -2,19 +2,12 @@
 #include "NegationRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
 
-NegationRule::NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises): Rule(LogicOperation::NOT, result, std::move(premises))
+NegationRule::NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
+        LogicOperation::NOT, result, std::move(premises),
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
 }
 
-int NegationRule::getRuleArgumentCountIntroduction() const
-{
-    return 1;
-}
-
-int NegationRule::getRuleArgumentCountElimination() const
-{
-    return 1;
-}
 
 void NegationRule::applyIntroduction(Deduction &deduction) const
 {

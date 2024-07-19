@@ -6,95 +6,6 @@
 #include "../Formulas/Variable.h"
 #include "../Formulas/TertiaryLogicFormula.h"
 
-void Deduction::applyRule(Rule rule)
-{
-    switch (rule.getType())
-    {
-
-        case LogicOperation::AND:
-            switch (rule.getResult())
-            {
-                case RuleResult::INTRODUCTION:
-                    applyConjunctionIntroduction(rule);
-                    break;
-                case RuleResult::ELIMINATION:
-                    applyConjunctionElimination(rule);
-                    break;
-            }
-            break;
-        case LogicOperation::OR:
-            switch (rule.getResult())
-            {
-                case RuleResult::INTRODUCTION:
-                    applyDisjunctionIntroduction(rule);
-                    break;
-                case RuleResult::ELIMINATION:
-                    applyDisjunctionElimination(rule);
-                    break;
-            }
-            break;
-        case LogicOperation::IMPLIES:
-            switch (rule.getResult())
-            {
-                case RuleResult::INTRODUCTION:
-                    applyImplicationIntroduction(rule);
-                    break;
-                case RuleResult::ELIMINATION:
-                    applyImplicationElimination(rule);
-                    break;
-            }
-            break;
-        case LogicOperation::NOT:
-            switch (rule.getResult())
-            {
-                case RuleResult::INTRODUCTION:
-                    applyNegationIntroduction(rule);
-                    break;
-                case RuleResult::ELIMINATION:
-                    applyNegationElimination(rule);
-                    break;
-            }
-            break;
-        case LogicOperation::FOR_EACH:
-            switch (rule.getResult())
-            {
-                case RuleResult::INTRODUCTION:
-                    applyUniversalIntroduction(rule);
-                    break;
-                case RuleResult::ELIMINATION:
-                    applyUniversalElimination(rule);
-                    break;
-            }
-            break;
-        case LogicOperation::EXISTS:
-            switch (rule.getResult())
-            {
-                case RuleResult::INTRODUCTION:
-                    applyExistentialIntroduction(rule);
-                    break;
-                case RuleResult::ELIMINATION:
-                    applyExistentialElimination(rule);
-                    break;
-            }
-            break;
-        case LogicOperation::FALSE:
-            switch (rule.getResult())
-            {
-                case RuleResult::INTRODUCTION:
-                    applyFalseIntroduction(rule);
-                    break;
-                case RuleResult::ELIMINATION:
-                    applyFalseElimination(rule);
-                    break;
-            }
-            break;
-        default:
-            throw std::invalid_argument("Invalid LogicOperation");
-    }
-
-}
-
-
 void Deduction::addAssumption(Formula *f)
 {
     auto shared = std::make_shared<Node>(f);
@@ -102,11 +13,12 @@ void Deduction::addAssumption(Formula *f)
     conclusions.push_back(shared);
 }
 
-void Deduction::applyFalseIntroduction(Rule rule)
+void Deduction::addAssumptionWithMarker(Formula *f, char marker)
 {
-    applyNegationElimination(Rule(LogicOperation::NOT, RuleResult::ELIMINATION, {rule.getPremises()[0]}));
+    auto shared = std::make_shared<Node>(f, marker);
+    assumptions.push_back(shared);
+    conclusions.push_back(shared);
 }
-
 
 
 std::vector<std::shared_ptr<Node>>::iterator Deduction::findAssumption(Formula *ruleAssumed)
@@ -114,13 +26,42 @@ std::vector<std::shared_ptr<Node>>::iterator Deduction::findAssumption(Formula *
 
     for (auto assumption = assumptions.begin(); assumption != assumptions.end(); assumption++)
     {
-        if (*((assumption)->get()->getFormula()) == *(ruleAssumed))
+        if (!assumption->get()->isCrossed() && *((assumption)->get()->getFormula()) == *(ruleAssumed))
         {
             return assumption;
         }
     }
 
     return assumptions.end();
+}
+
+std::vector<std::shared_ptr<Node>>::iterator Deduction::findAssumptionWithMarker(Formula *ruleAssumed, char marker)
+{
+
+    for (auto assumption = assumptions.begin(); assumption != assumptions.end(); assumption++)
+    {
+        if (!assumption->get()->isCrossed() &&
+            assumption->get()->getMarker() == marker &&
+            *((assumption)->get()->getFormula()) == *(ruleAssumed))
+        {
+            return assumption;
+        }
+    }
+
+    return assumptions.end();
+}
+
+
+void Deduction::crossAssumptionsWithMarker(Formula *formula, char marker)
+{
+    for (auto & assumption : assumptions)
+    {
+        if (assumption->getMarker() == marker &&
+            *(assumption->getFormula()) == *(formula))
+        {
+            assumption->cross();
+        }
+    }
 }
 
 void Deduction::print()

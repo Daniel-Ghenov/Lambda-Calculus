@@ -4,19 +4,12 @@
 #include "../../Formulas/TertiaryLogicFormula.h"
 #include "../../Formulas/Variable.h"
 
-UniversalRule::UniversalRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises): Rule(LogicOperation::FOR_EACH , result, std::move(premises))
+UniversalRule::UniversalRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
+        LogicOperation::FOR_EACH, result, std::move(premises),
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
 }
 
-int UniversalRule::getRuleArgumentCountElimination() const
-{
-    return 2;
-}
-
-int UniversalRule::getRuleArgumentCountIntroduction() const
-{
-    return 1;
-}
 
 void UniversalRule::applyIntroduction(Deduction &deduction) const
 {

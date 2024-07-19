@@ -3,19 +3,9 @@
 #include "../../Formulas/BinaryLogicFormula.h"
 
 ConjunctionRule::ConjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
-        LogicOperation::AND, result, std::move(premises))
+        LogicOperation::AND, result, std::move(premises),
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
-
-}
-
-int ConjunctionRule::getRuleArgumentCountIntroduction() const
-{
-    return 1;
-}
-
-int ConjunctionRule::getRuleArgumentCountElimination() const
-{
-    return 2;
 }
 
 void ConjunctionRule::applyIntroduction(Deduction &deduction) const
@@ -90,8 +80,7 @@ void ConjunctionRule::applyElimination(Deduction &deduction) const
     const auto left = conjunction->getLeftOperand();
     const auto right = conjunction->getRightOperand();
 
-    if (!(*left == *conclusion) &&
-        !(*right == *conclusion))
+    if (!(*left == *conclusion) && !(*right == *conclusion))
     {
         throw std::invalid_argument("Invalid conclusion to eliminate");
     }

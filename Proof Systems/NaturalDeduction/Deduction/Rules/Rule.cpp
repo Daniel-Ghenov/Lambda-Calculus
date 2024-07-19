@@ -1,63 +1,13 @@
 #include <stdexcept>
+#include <utility>
 #include "Rule.h"
 
-int Rule::getRuleArgumentCount() const
-{
-    switch (this->result)
-    {
-        case RuleResult::INTRODUCTION:
-            return getRuleArgumentCountIntroduction();
-        case RuleResult::ELIMINATION:
-            return getRuleArgumentCountElimination();
-        default:
-            throw std::invalid_argument("Invalid RuleResult");
-    }
-}
 
-int Rule::getRuleArgumentCountIntroduction() const
-{
-    switch (this->type)
-    {
-        case LogicOperation::OR:
-        case LogicOperation::IMPLIES:
-        case LogicOperation::EXISTS:
-            return 2;
-        case LogicOperation::AND:
-        case LogicOperation::NOT:
-        case LogicOperation::FOR_EACH:
-        case LogicOperation::FALSE:
-            return 1;
-
-        default:
-            throw std::invalid_argument("Invalid LogicOperation");
-    }
-}
-
-int Rule::getRuleArgumentCountElimination() const
-{
-    switch (this->type)
-    {
-        case LogicOperation::AND:
-        case LogicOperation::OR:
-        case LogicOperation::FOR_EACH:
-        case LogicOperation::EXISTS:
-            return 2;
-        case LogicOperation::IMPLIES:
-        case LogicOperation::NOT:
-        case LogicOperation::FALSE:
-            return 1;
-        default:
-            throw std::invalid_argument("Invalid LogicOperation");
-    }
-}
-
-Rule::Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : type(type),
+Rule::Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, int premiseSize) : type(type),
                                                                                                        result(result),
-                                                                                                       premises(
-                                                                                                               std::move(
-                                                                                                                       premises))
+                                                                                                       premises(std::move(premises))
 {
-    if (this->premises.size() != getRuleArgumentCount())
+    if (this->premises.size() != premiseSize)
     {
         throw std::invalid_argument("Invalid number of premises");
     }
@@ -90,5 +40,30 @@ void Rule::apply(Deduction &d) const
             break;
         default:
             throw std::invalid_argument("Invalid RuleResult");
+    }
+}
+
+int Rule::getArgumentCount(RuleResult result, int introductionCount, int eliminationCount)
+{
+    switch (result)
+    {
+        case RuleResult::INTRODUCTION:
+            return introductionCount;
+        case RuleResult::ELIMINATION:
+            return eliminationCount;
+        default:
+            throw std::invalid_argument("Invalid RuleResult");
+    }
+}
+
+Rule::Rule(LogicOperation type, RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises,
+           std::vector<char>&& markers, int premiseSize): type(type),
+                                                        result(result),
+                                                        premises(std::move(premises)),
+                                                        markers(std::move(markers))
+{
+    if (this->premises.size() != premiseSize)
+    {
+        throw std::invalid_argument("Invalid number of premises");
     }
 }

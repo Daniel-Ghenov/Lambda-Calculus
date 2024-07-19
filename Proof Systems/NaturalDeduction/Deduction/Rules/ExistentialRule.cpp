@@ -5,18 +5,10 @@
 #include "../../Formulas/BinaryLogicFormula.h"
 
 
-ExistentialRule::ExistentialRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises): Rule(LogicOperation::EXISTS, result, std::move(premises))
+ExistentialRule::ExistentialRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
+        LogicOperation::EXISTS, result, std::move(premises),
+        getArgumentCount(result, argumentCountIntroduction, argumentCountElimination))
 {
-}
-
-int ExistentialRule::getRuleArgumentCountIntroduction() const
-{
-    return 2;
-}
-
-int ExistentialRule::getRuleArgumentCountElimination() const
-{
-    return 2;
 }
 
 void ExistentialRule::applyIntroduction(Deduction &deduction) const
@@ -127,5 +119,6 @@ void ExistentialRule::applyElimination(Deduction &deduction) const
 
     deduction.conclusions.erase(deduction.findConclusion(existential));
     deduction.conclusions.erase(deduction.findConclusion(node));
-    deduction.conclusions.push_back(newNode);}
+    deduction.conclusions.push_back(newNode);
+}
 

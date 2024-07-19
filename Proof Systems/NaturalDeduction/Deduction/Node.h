@@ -11,10 +11,13 @@ private:
     std::unique_ptr<Formula> formula;
     std::shared_ptr<Node> next;
     std::vector<std::shared_ptr<Node>> previous;
+    char marker = 0;
+private:
     bool crossed = false;
 public:
-    explicit Node(Formula *f) : formula(f), next(nullptr), previous()
-    {};
+    explicit Node(Formula *f);
+
+    Node(Formula* f, char marker);
 
     ~Node() = default;
 
@@ -31,6 +34,13 @@ public:
     void addPrevious(Node *n);
 
     void addPrevious(std::shared_ptr<Node> n);
+
+    [[nodiscard]] char getMarker() const;
+
+    void setMarker(char marker);
+
+    [[nodiscard]] bool hasMarker() const;
+
 
     [[nodiscard]] std::vector<std::shared_ptr<Node>> &getPrevious();
 

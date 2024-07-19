@@ -17,8 +17,7 @@ public:
     void print();
 
     void addAssumption(Formula *f);
-
-
+    void addAssumptionWithMarker(Formula *f, char marker);
 
 private:
 
@@ -28,14 +27,10 @@ private:
 
     static char getXNotInFormula(const Formula *formula);
 
-    void applyFalseIntroduction(Rule rule);
 
-    void applyFalseElimination(Rule rule);
-
+    std::vector<std::shared_ptr<Node>>::iterator findAssumptionWithMarker(Formula *ruleAssumed, char marker);
     std::vector<std::shared_ptr<Node>>::iterator findAssumption(Formula *ruleAssumed);
-
     std::vector<std::shared_ptr<Node>>::iterator findConclusion(const Formula *pFormula);
-
     std::vector<std::shared_ptr<Node>>::iterator findConclusion(const Node *ruleAssumed);
 
     static bool findFormulaInVector(std::vector<Formula *> vector1, Formula *pFormula);
@@ -47,4 +42,6 @@ private:
     friend class ExistentialRule;
     friend class UniversalRule;
     friend class FalseRule;
+
+    void crossAssumptionsWithMarker(Formula *formula, char marker);
 };
