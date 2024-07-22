@@ -22,8 +22,6 @@ add_executable(NaturalDeduction
         Deduction/Node.cpp
         Deduction/Rules/Rule.h
         Deduction/Rules/Rule.cpp
-        Formulas/SubstitutionFormula.h
-        Formulas/SubstitutionFormula.cpp
         Formulas/TertiaryLogicFormula.h
         Formulas/TertiaryLogicFormula.cpp
         Deduction/Rules/DisjunctionRule.h

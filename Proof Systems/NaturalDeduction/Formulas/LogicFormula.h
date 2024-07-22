@@ -17,6 +17,7 @@ enum class LogicOperation
 };
 
 std::string logicOperationToString(LogicOperation op);
+LogicOperation logicOperationFromString(const std::string_view &str);
 
 class LogicFormula : public Formula
 {

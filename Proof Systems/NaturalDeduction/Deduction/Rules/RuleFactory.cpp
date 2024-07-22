@@ -1,5 +1,6 @@
 #include <memory>
 #include <stdexcept>
+#include <iostream>
 #include "RuleFactory.h"
 #include "UniversalRule.h"
 #include "ExistentialRule.h"
@@ -8,6 +9,7 @@
 #include "ImplicationRule.h"
 #include "NegationRule.h"
 #include "FalseRule.h"
+#include "../../Formulas/FormulaFactory.h"
 
 std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult result, std::vector<std::shared_ptr<Formula>>&& premises)
 {
@@ -34,7 +36,7 @@ std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult res
     }
 }
 
-std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult result, std::vector<std::shared_ptr<Formula>>&& premises, std::vector<char> &&markers)
+std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult result, std::vector<std::shared_ptr<Formula>>&& premises, std::vector<char>&& markers)
 {
     switch (type)
     {
@@ -52,4 +54,39 @@ std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult res
             throw std::invalid_argument("logic operation not supported");
     }
 
+}
+
+std::shared_ptr<Rule> RuleFactory::createRule(std::istream& in)
+{
+    std::string type;
+    in >> type;
+    LogicOperation operation = logicOperationFromString(type);
+    std::string result;
+    in >> result;
+    RuleResult ruleResult = ruleResultFromString(result);
+
+    size_t premisesCount;
+    in >> premisesCount;
+    std::vector<std::shared_ptr<Formula>> premises;
+    premises.reserve(premisesCount);
+    for (size_t i = 0; i < premisesCount; i++)
+    {
+        std::string formulaString;
+        in >> formulaString;
+        premises.push_back(std::shared_ptr<Formula>(FormulaFactory::createFormula(formulaString)));
+    }
+
+    size_t markersCount;
+    in >> markersCount;
+    std::vector<char> markers;
+    markers.reserve(markersCount);
+    for (size_t i = 0; i < markersCount; i++)
+    {
+        char marker;
+        in >> marker;
+        markers.push_back(marker);
+
+    }
+
+    return RuleFactory::createRule(operation, ruleResult, std::move(premises), std::move(markers));
 }

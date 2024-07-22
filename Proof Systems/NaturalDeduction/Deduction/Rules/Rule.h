@@ -10,6 +10,8 @@ enum class RuleResult
     ELIMINATION,
 };
 
+RuleResult ruleResultFromString(const std::string &s);
+
 class Rule
 {
 protected:

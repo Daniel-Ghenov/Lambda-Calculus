@@ -7,6 +7,7 @@
 #include "Formulas/UnaryLogicFormula.h"
 #include "Formulas/TertiaryLogicFormula.h"
 #include "Deduction/Rules/RuleFactory.h"
+#include "Formulas/FormulaFactory.h"
 
 void test1()
 {
@@ -364,6 +365,15 @@ void provingDeMorgan()
 
     rule10->apply(deduction);
     deduction.print();
+}
+
+void testLogicFormulaFactory()
+{
+    std::string str;
+    std::cin >> str;
+    Formula* formula = FormulaFactory::createFormula(str);
+    formula->print();
+    delete formula;
 }
 
 int main()

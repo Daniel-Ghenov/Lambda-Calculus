@@ -67,3 +67,19 @@ int Rule::getArgumentCount(RuleResult result, int introductionCount, int elimina
             throw std::invalid_argument("Invalid RuleResult");
     }
 }
+
+RuleResult ruleResultFromString(const std::string &s)
+{
+    if (s == "INTRODUCTION")
+    {
+        return RuleResult::INTRODUCTION;
+    }
+    else if (s == "ELIMINATION")
+    {
+        return RuleResult::ELIMINATION;
+    }
+    else
+    {
+        throw std::invalid_argument("Invalid RuleResult");
+    }
+}
