@@ -14,4 +14,11 @@ private:
 public:
     DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
     DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, std::vector<char> &&markers);
+
+    static std::unique_ptr<DisjunctionRule> createRule(RuleResult result);
+
+private:
+    static std::unique_ptr<DisjunctionRule> createIntroductionRule();
+
+    static std::unique_ptr<DisjunctionRule> createEliminationRule();
 };

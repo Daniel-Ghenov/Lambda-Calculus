@@ -12,4 +12,11 @@ private:
     static const int argumentCountElimination = 1;
 public:
     FalseRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
+
+    static std::unique_ptr<FalseRule> createRule(RuleResult result);
+
+private:
+    static std::unique_ptr<FalseRule> createIntroductionRule();
+
+    static std::unique_ptr<FalseRule> createEliminationRule();
 };

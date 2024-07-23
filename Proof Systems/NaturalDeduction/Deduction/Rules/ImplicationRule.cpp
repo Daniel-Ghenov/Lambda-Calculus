@@ -1,6 +1,8 @@
 #include <stdexcept>
+#include <iostream>
 #include "ImplicationRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
+#include "../../Formulas/FormulaFactory.h"
 
 ImplicationRule::ImplicationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
         LogicOperation::IMPLIES, result, std::move(premises),
@@ -95,4 +97,51 @@ void ImplicationRule::applyElimination(Deduction &deduction) const
 
     node->addPrevious(*implIter);
     node->addPrevious(*impliedIter);
+}
+
+std::unique_ptr<ImplicationRule> ImplicationRule::createRule(RuleResult result)
+{
+    switch (result)
+    {
+        case RuleResult::INTRODUCTION:
+            return createIntroductionRule();
+        case RuleResult::ELIMINATION:
+            return createEliminationRule();
+        default:
+            throw std::invalid_argument("Invalid result");
+    }
+}
+
+std::unique_ptr<ImplicationRule> ImplicationRule::createIntroductionRule()
+{
+    std::cout<<"Enter the premise of the implication:"<<std::endl;
+    std::string formulaString;
+    std::cin>>formulaString;
+    auto formula = std::shared_ptr<Formula>(FormulaFactory::createFormula(formulaString));
+
+    std::cout<<"Enter the conclusion of the implication:"<<std::endl;
+    std::string conclusionString;
+    std::cin>>conclusionString;
+    auto conclusion = std::shared_ptr<Formula>(FormulaFactory::createFormula(conclusionString));
+
+    std::cout<<"Enter the marker (leave empty if not needed):"<<std::endl;
+    char marker;
+    if (std::cin.peek() == '\n' || std::cin.peek() == '\r')
+    {
+        return std::make_unique<ImplicationRule>(RuleResult::INTRODUCTION, std::vector{formula, conclusion});
+    }
+
+    std::cin>>marker;
+    return std::make_unique<ImplicationRule>(RuleResult::INTRODUCTION, std::vector{formula, conclusion}, std::vector{marker});
+}
+
+std::unique_ptr<ImplicationRule> ImplicationRule::createEliminationRule()
+{
+    std::cout<<"Enter the implication:"<<std::endl;
+    std::string implicationString;
+    std::cin>>implicationString;
+    auto implication = std::shared_ptr<Formula>(FormulaFactory::createFormula(implicationString));
+
+    return std::make_unique<ImplicationRule>(RuleResult::ELIMINATION, std::vector{implication});
+
 }

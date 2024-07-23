@@ -1,8 +1,10 @@
 #include <stdexcept>
+#include <iostream>
 #include "ExistentialRule.h"
 #include "../../Formulas/TertiaryLogicFormula.h"
 #include "../../Formulas/Variable.h"
 #include "../../Formulas/BinaryLogicFormula.h"
+#include "../../Formulas/FormulaFactory.h"
 
 
 ExistentialRule::ExistentialRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
@@ -24,7 +26,6 @@ ExistentialRule::ExistentialRule(RuleResult result, std::vector<std::shared_ptr<
 void ExistentialRule::applyIntroduction(Deduction &deduction) const
 {
     auto substitution = premises[0].get();
-    auto var = premises[1].get();
 
     if (substitution->getType() != FormulaType::TERTIARY_LOGIC)
     {
@@ -48,14 +49,14 @@ void ExistentialRule::applyIntroduction(Deduction &deduction) const
         throw std::invalid_argument("Invalid substitution, must be in conclusions");
     }
 
-    auto variableIter = deduction.findConclusion(var);
+    auto variableIter = deduction.findConclusion(variable);
 
     if (variableIter == deduction.conclusions.end())
     {
         throw std::invalid_argument("Invalid variable, must be in conclusions");
     }
 
-    Formula *f = new BinaryLogicFormula(var->clone(), proposition->clone(), LogicOperation::EXISTS);
+    Formula *f = new BinaryLogicFormula(variable->clone(), proposition->clone(), LogicOperation::EXISTS);
     std::shared_ptr<Node> node = std::make_shared<Node>(f);
 
     substitutionIter->get()->setNext(node);
@@ -65,7 +66,7 @@ void ExistentialRule::applyIntroduction(Deduction &deduction) const
     node->addPrevious(*variableIter);
 
     deduction.conclusions.erase(deduction.findConclusion(substitution));
-    deduction.conclusions.erase(deduction.findConclusion(var));
+    deduction.conclusions.erase(deduction.findConclusion(variable));
     deduction.conclusions.push_back(node);
 }
 
@@ -138,5 +139,56 @@ void ExistentialRule::applyElimination(Deduction &deduction) const
     deduction.conclusions.erase(deduction.findConclusion(existential));
     deduction.conclusions.erase(deduction.findConclusion(node));
     deduction.conclusions.push_back(newNode);
+}
+
+std::unique_ptr<ExistentialRule> ExistentialRule::createRule(RuleResult result)
+{
+    switch (result)
+    {
+        case RuleResult::INTRODUCTION:
+            return createIntroductionRule();
+        case RuleResult::ELIMINATION:
+            return createEliminationRule();
+        default:
+            throw std::invalid_argument("Invalid result");
+    }
+}
+
+std::unique_ptr<ExistentialRule> ExistentialRule::createIntroductionRule()
+{
+    std::cout << "Enter the substitution formula:" << std::endl;
+    std::string substitutionString;
+    std::cin >> substitutionString;
+    auto substitution = std::shared_ptr<Formula>(FormulaFactory::createFormula(substitutionString));
+
+    return std::make_unique<ExistentialRule>(RuleResult::INTRODUCTION, std::vector{substitution});
+}
+
+std::unique_ptr<ExistentialRule> ExistentialRule::createEliminationRule()
+{
+    std::cout << "Enter the existential formula:" << std::endl;
+    std::string existentialString;
+    std::cin >> existentialString;
+    auto existential = std::shared_ptr<Formula>(FormulaFactory::createFormula(existentialString));
+
+    std::cout << "Enter the conclusion formula:" << std::endl;
+    std::string conclusionString;
+    std::cin >> conclusionString;
+    auto conclusion = std::shared_ptr<Formula>(FormulaFactory::createFormula(conclusionString));
+
+    std::vector<char> markers;
+    std::cout << "Enter the marker for the assumption(leave empty if not needed):" << std::endl;
+    char marker;
+    if (std::cin.peek() == '\n' || std::cin.peek() == '\r')
+    {
+        std::cin.ignore();
+        markers.push_back('\0');
+    }
+    else
+    {
+        std::cin >> marker;
+        markers.push_back(marker);
+    }
+    return std::make_unique<ExistentialRule>(RuleResult::ELIMINATION, std::vector{existential, conclusion}, std::move(markers));
 }
 

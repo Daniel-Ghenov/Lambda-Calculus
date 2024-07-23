@@ -13,4 +13,11 @@ private:
 public:
     ImplicationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
     ImplicationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, std::vector<char>&& markers);
+
+    static std::unique_ptr<ImplicationRule> createRule(RuleResult result);
+
+private:
+    static std::unique_ptr<ImplicationRule> createIntroductionRule();
+
+    static std::unique_ptr<ImplicationRule> createEliminationRule();
 };

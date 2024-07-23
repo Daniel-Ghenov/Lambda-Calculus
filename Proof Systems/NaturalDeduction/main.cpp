@@ -8,6 +8,7 @@
 #include "Formulas/TertiaryLogicFormula.h"
 #include "Deduction/Rules/RuleFactory.h"
 #include "Formulas/FormulaFactory.h"
+#include "Deduction/DeductionController.h"
 
 void test1()
 {
@@ -376,7 +377,7 @@ void testLogicFormulaFactory()
     delete formula;
 }
 
-int main()
+void runAllTests()
 {
 
     std::cout << "Test 1" << std::endl;
@@ -402,7 +403,16 @@ int main()
 
     std::cout << "Proving De Morgan's Law" << std::endl;
     provingDeMorgan();
+}
 
+void runDeduction()
+{
+    DeductionController deductionController;
+    deductionController.start();
+}
 
+int main()
+{
+    runDeduction();
     return 0;
 }

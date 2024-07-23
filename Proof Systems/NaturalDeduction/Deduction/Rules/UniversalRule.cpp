@@ -1,8 +1,10 @@
 #include <stdexcept>
+#include <iostream>
 #include "UniversalRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
 #include "../../Formulas/TertiaryLogicFormula.h"
 #include "../../Formulas/Variable.h"
+#include "../../Formulas/FormulaFactory.h"
 
 UniversalRule::UniversalRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
         LogicOperation::FOR_EACH, result, std::move(premises),
@@ -15,7 +17,7 @@ void UniversalRule::applyIntroduction(Deduction &deduction) const
 {
     auto proposition = premises[0].get();
 
-    auto propositionIter = deduction.findAssumption(proposition);
+    auto propositionIter = deduction.findConclusion(proposition);
 
     if (propositionIter == deduction.assumptions.end())
     {
@@ -85,6 +87,44 @@ void UniversalRule::applyElimination(Deduction &deduction) const
     deduction.conclusions.erase(deduction.findConclusion(universal));
     deduction.conclusions.erase(deduction.findConclusion(variable));
     deduction.conclusions.push_back(node);
+}
+
+std::unique_ptr<UniversalRule> UniversalRule::createRule(RuleResult result)
+{
+    switch (result)
+    {
+        case RuleResult::INTRODUCTION:
+            return createIntroductionRule();
+        case RuleResult::ELIMINATION:
+            return createEliminationRule();
+        default:
+            throw std::invalid_argument("Invalid result");
+    }
+}
+
+std::unique_ptr<UniversalRule> UniversalRule::createIntroductionRule()
+{
+    std::cout<<"Enter the proposition of the universal:"<<std::endl;
+    std::string formulaString;
+    std::cin>>formulaString;
+    auto formula = std::shared_ptr<Formula>(FormulaFactory::createFormula(formulaString));
+
+    return std::make_unique<UniversalRule>(RuleResult::INTRODUCTION, std::vector{formula});
+}
+
+std::unique_ptr<UniversalRule> UniversalRule::createEliminationRule()
+{
+    std::cout<<"Enter the universal formula:"<<std::endl;
+    std::string universalString;
+    std::cin>>universalString;
+    auto universal = std::shared_ptr<Formula>(FormulaFactory::createFormula(universalString));
+
+    std::cout<<"Enter the variable that is a conclusion"<<std::endl;
+    std::string variableString;
+    std::cin>>variableString;
+    auto variable = std::shared_ptr<Formula>(FormulaFactory::createFormula(variableString));
+
+    return std::make_unique<UniversalRule>(RuleResult::ELIMINATION, std::vector{universal, variable});
 }
 
 

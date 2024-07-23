@@ -1,7 +1,9 @@
 #include <stdexcept>
+#include <iostream>
 #include "DisjunctionRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
 #include "../Node.h"
+#include "../../Formulas/FormulaFactory.h"
 
 DisjunctionRule::DisjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
         LogicOperation::OR, result, std::move(premises),
@@ -73,7 +75,14 @@ void DisjunctionRule::applyElimination(Deduction &deduction) const
     if (markers.empty()){
         leftIter->get()->cross();
         rightIter->get()->cross();
-    } else {
+    }
+    else if (markers.size() == 1)
+    {
+        auto marker = markers[0];
+        deduction.crossAssumptionsWithMarker(left, marker);
+    }
+    else
+    {
         auto leftMarker = markers[0];
         auto rightMarker = markers[1];
         deduction.crossAssumptionsWithMarker(left, leftMarker);
@@ -124,4 +133,61 @@ void DisjunctionRule::applyIntroduction(Deduction &deduction) const
 
     deduction.conclusions.erase(deduction.findConclusion(current));
     deduction.conclusions.push_back(node);
+}
+
+std::unique_ptr<DisjunctionRule> DisjunctionRule::createRule(RuleResult result)
+{
+    switch (result)
+    {
+        case RuleResult::INTRODUCTION:
+            return createIntroductionRule();
+        case RuleResult::ELIMINATION:
+            return createEliminationRule();
+        default:
+            throw std::invalid_argument("Invalid result");
+    }
+}
+
+std::unique_ptr<DisjunctionRule> DisjunctionRule::createIntroductionRule()
+{
+    std::cout<<"Enter the expected disjunction:"<<std::endl;
+    std::string disjunctionString;
+    std::cin>>disjunctionString;
+    auto disjunction = std::shared_ptr<Formula>(FormulaFactory::createFormula(disjunctionString));
+
+    std::cout<<"Enter the current formula:"<<std::endl;
+    std::string currentString;
+    std::cin>>currentString;
+    auto current = std::shared_ptr<Formula>(FormulaFactory::createFormula(currentString));
+
+    return std::make_unique<DisjunctionRule>(RuleResult::INTRODUCTION, std::vector{disjunction, current});
+}
+
+std::unique_ptr<DisjunctionRule> DisjunctionRule::createEliminationRule()
+{
+    std::cout<<"Enter the current disjunction:"<<std::endl;
+    std::string disjunctionString;
+    std::cin>>disjunctionString;
+    auto disjunction = std::shared_ptr<Formula>(FormulaFactory::createFormula(disjunctionString));
+
+    std::cout<<"Enter the implied formula:"<<std::endl;
+    std::string impliedString;
+    std::cin>>impliedString;
+    auto implied = std::shared_ptr<Formula>(FormulaFactory::createFormula(impliedString));
+
+    std::vector<char> markers;
+    for (size_t i = 0; i < 2; i++)
+    {
+        std::cout<<"Enter the marker for the "<<(i == 0 ? "left" : "right")<<" operand (leave empty if no marker is needed):"<<std::endl;
+        char marker;
+        if (std::cin.peek() == '\n' || std::cin.peek() == '\r')
+        {
+            std::cin.ignore();
+            markers.push_back('\0');
+            continue;
+        }
+        std::cin>>marker;
+        markers.push_back(marker);
+    }
+    return std::make_unique<DisjunctionRule>(RuleResult::ELIMINATION, std::vector{disjunction, implied}, std::move(markers));
 }

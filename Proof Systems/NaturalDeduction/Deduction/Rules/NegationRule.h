@@ -13,5 +13,12 @@ private:
 public:
     NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
     NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises, std::vector<char> &&markers);
+
+    static std::unique_ptr<NegationRule> createRule(RuleResult result);
+
+private:
+    static std::unique_ptr<NegationRule> createIntroductionRule();
+
+    static std::unique_ptr<NegationRule> createEliminationRule();
 };
 

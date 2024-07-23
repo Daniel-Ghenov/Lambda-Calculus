@@ -14,14 +14,16 @@ private:
 
 public:
 
-    void print();
+    void print() const;
 
     void addAssumption(Formula *f);
     void addAssumptionWithMarker(Formula *f, char marker);
 
+    void clear();
+
 private:
 
-    void printConclusions();
+    void printConclusions() const;
 
     static void getNodePointingToConclusion(const Formula *conclusion, Node *&node);
 

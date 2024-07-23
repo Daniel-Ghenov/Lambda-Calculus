@@ -54,6 +54,11 @@ std::vector<std::shared_ptr<Node>>::iterator Deduction::findAssumptionWithMarker
 
 void Deduction::crossAssumptionsWithMarker(Formula *formula, char marker)
 {
+    if (marker == 0)
+    {
+        return;
+    }
+
     for (auto & assumption : assumptions)
     {
         if (assumption->getMarker() == marker &&
@@ -64,7 +69,7 @@ void Deduction::crossAssumptionsWithMarker(Formula *formula, char marker)
     }
 }
 
-void Deduction::print()
+void Deduction::print() const
 {
 
     std::cout << "Assumptions: [";
@@ -95,7 +100,7 @@ void Deduction::print()
 
 }
 
-void Deduction::printConclusions()
+void Deduction::printConclusions() const
 {
     std::cout << "Conclusions: [";
     bool first = true;
@@ -187,4 +192,10 @@ bool Deduction::findFormulaInVector(std::vector<Formula *> vector1, Formula *pFo
     {
         return *formula == *pFormula;
     });
+}
+
+void Deduction::clear()
+{
+    assumptions.clear();
+    conclusions.clear();
 }

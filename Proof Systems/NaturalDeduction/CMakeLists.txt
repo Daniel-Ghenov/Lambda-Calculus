@@ -41,4 +41,6 @@ add_executable(NaturalDeduction
         Deduction/Rules/RuleFactory.h
         Deduction/Rules/RuleFactory.cpp
         Formulas/FormulaFactory.h
-        Formulas/FormulaFactory.cpp)
+        Formulas/FormulaFactory.cpp
+        Deduction/DeductionController.h
+        Deduction/DeductionController.cpp)

@@ -56,37 +56,93 @@ std::shared_ptr<Rule> RuleFactory::createRule(LogicOperation type,RuleResult res
 
 }
 
-std::shared_ptr<Rule> RuleFactory::createRule(std::istream& in)
+std::shared_ptr<Rule> RuleFactory::createRule()
 {
-    std::string type;
-    in >> type;
-    LogicOperation operation = logicOperationFromString(type);
-    std::string result;
-    in >> result;
-    RuleResult ruleResult = ruleResultFromString(result);
 
-    size_t premisesCount;
-    in >> premisesCount;
-    std::vector<std::shared_ptr<Formula>> premises;
-    premises.reserve(premisesCount);
-    for (size_t i = 0; i < premisesCount; i++)
+    LogicOperation operation = getLogicOperation();
+    RuleResult ruleResult = getRuleResult();
+
+    switch (operation)
     {
-        std::string formulaString;
-        in >> formulaString;
-        premises.push_back(std::shared_ptr<Formula>(FormulaFactory::createFormula(formulaString)));
+        case LogicOperation::AND:
+            return ConjunctionRule::createRule(ruleResult);
+        case LogicOperation::IMPLIES:
+            return ImplicationRule::createRule(ruleResult);
+        case LogicOperation::OR:
+            return DisjunctionRule::createRule(ruleResult);
+        case LogicOperation::NOT:
+            return NegationRule::createRule(ruleResult);
+        case LogicOperation::FALSE:
+            return FalseRule::createRule(ruleResult);
+        case LogicOperation::FOR_EACH:
+            return UniversalRule::createRule(ruleResult);
+        case LogicOperation::EXISTS:
+            return ExistentialRule::createRule(ruleResult);
+        case LogicOperation::SUBSTITUTION:
+        case LogicOperation::BIDIRECTIONAL_IMPLIES:
+        default:
+            throw std::invalid_argument("logic operation not supported");
     }
+}
 
-    size_t markersCount;
-    in >> markersCount;
-    std::vector<char> markers;
-    markers.reserve(markersCount);
-    for (size_t i = 0; i < markersCount; i++)
-    {
-        char marker;
-        in >> marker;
-        markers.push_back(marker);
+LogicOperation RuleFactory::getLogicOperation()
+{
+    while (true){
+        std::cout << "Enter rule type:" << std::endl;
+        std::cout << "1. Conjunction" << std::endl;
+        std::cout << "2. Disjunction" << std::endl;
+        std::cout << "3. Implication" << std::endl;
+        std::cout << "4. Negation" << std::endl;
+        std::cout << "5. Universal" << std::endl;
+        std::cout << "6. Existential" << std::endl;
+        std::cout << "7. Substitution" << std::endl;
+        std::cout << "8. False" << std::endl;
 
+        int choice;
+        std::cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                return LogicOperation::AND;
+            case 2:
+                return LogicOperation::OR;
+            case 3:
+                return LogicOperation::IMPLIES;
+            case 4:
+                return LogicOperation::NOT;
+            case 5:
+                return LogicOperation::FOR_EACH;
+            case 6:
+                return LogicOperation::EXISTS;
+            case 7:
+                return LogicOperation::SUBSTITUTION;
+            case 8:
+                return LogicOperation::FALSE;
+            default:
+                std::cout << "Invalid choice" << std::endl;
+        }
     }
+}
 
-    return RuleFactory::createRule(operation, ruleResult, std::move(premises), std::move(markers));
+RuleResult RuleFactory::getRuleResult()
+{
+    while (true){
+        std::cout << "Enter rule result:" << std::endl;
+        std::cout << "1. Introduction" << std::endl;
+        std::cout << "2. Elimination" << std::endl;
+
+        int choice;
+        std::cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                return RuleResult::INTRODUCTION;
+            case 2:
+                return RuleResult::ELIMINATION;
+            default:
+                std::cout << "Invalid choice" << std::endl;
+        }
+    }
 }

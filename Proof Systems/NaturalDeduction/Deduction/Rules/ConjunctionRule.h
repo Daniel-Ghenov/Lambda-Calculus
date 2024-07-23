@@ -13,4 +13,10 @@ private:
 public:
     ConjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
 
+    static std::unique_ptr<ConjunctionRule> createRule(RuleResult result);
+
+private:
+    static std::unique_ptr<ConjunctionRule> createIntroductionRule();
+
+    static std::unique_ptr<ConjunctionRule> createEliminationRule();
 };

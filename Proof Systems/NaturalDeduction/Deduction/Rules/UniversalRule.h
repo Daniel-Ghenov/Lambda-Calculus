@@ -13,4 +13,10 @@ private:
 public:
     UniversalRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises);
 
+    static std::unique_ptr<UniversalRule> createRule(RuleResult result);
+
+private:
+    static std::unique_ptr<UniversalRule> createIntroductionRule();
+
+    static std::unique_ptr<UniversalRule> createEliminationRule();
 };

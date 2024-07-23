@@ -1,6 +1,8 @@
 #include <stdexcept>
+#include <iostream>
 #include "NegationRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
+#include "../../Formulas/FormulaFactory.h"
 
 NegationRule::NegationRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
         LogicOperation::NOT, result, std::move(premises),
@@ -76,10 +78,56 @@ void NegationRule::applyElimination(Deduction &deduction) const
 
     auto contradictionIter = deduction.findConclusion(contradiction);
 
+    if (contradictionIter == deduction.conclusions.end())
+    {
+        throw std::invalid_argument("Invalid contradiction");
+    }
+
     std::shared_ptr<Node> node = std::make_shared<Node>(UnaryLogicFormula::getFalse());
 
     contradictionIter->get()->setNext(node);
     node->addPrevious(*contradictionIter);
     deduction.conclusions.erase(deduction.findConclusion(contradiction));
     deduction.conclusions.push_back(node);
+}
+
+std::unique_ptr<NegationRule> NegationRule::createRule(RuleResult result)
+{
+    switch (result)
+    {
+        case RuleResult::INTRODUCTION:
+            return createIntroductionRule();
+        case RuleResult::ELIMINATION:
+            return createEliminationRule();
+        default:
+            throw std::invalid_argument("Invalid rule result");
+    }
+}
+
+std::unique_ptr<NegationRule> NegationRule::createIntroductionRule()
+{
+    std::cout<< "Enter the rule leading to false: "<<std::endl;
+    std::string formulaString;
+    std::cin >> formulaString;
+    auto formula = std::shared_ptr<Formula>(FormulaFactory::createFormula(formulaString));
+
+    char marker;
+    std::cout << "Enter the marker for the assumption(leave empty if not needed):" << std::endl;
+    if (std::cin.peek() == '\n' || std::cin.peek() == '\r')
+    {
+        return std::make_unique<NegationRule>(RuleResult::INTRODUCTION, std::vector{formula});
+    }
+
+    std::cin >> marker;
+    return std::make_unique<NegationRule>(RuleResult::INTRODUCTION, std::vector{formula}, std::vector{marker});
+}
+
+std::unique_ptr<NegationRule> NegationRule::createEliminationRule()
+{
+    std::cout<< "Enter the conclusion that has a contradiction: "<< std::endl;
+    std::string formulaString;
+    std::cin >> formulaString;
+    auto formula = std::shared_ptr<Formula>(FormulaFactory::createFormula(formulaString));
+
+    return std::make_unique<NegationRule>(RuleResult::ELIMINATION, std::vector{formula});
 }

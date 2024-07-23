@@ -1,6 +1,8 @@
 #include <stdexcept>
+#include <iostream>
 #include "ConjunctionRule.h"
 #include "../../Formulas/BinaryLogicFormula.h"
+#include "../../Formulas/FormulaFactory.h"
 
 ConjunctionRule::ConjunctionRule(RuleResult result, std::vector<std::shared_ptr<Formula>> &&premises) : Rule(
         LogicOperation::AND, result, std::move(premises),
@@ -99,3 +101,40 @@ void ConjunctionRule::applyElimination(Deduction &deduction) const
     deduction.conclusions.erase(i);
     deduction.conclusions.push_back(node);
 }
+
+std::unique_ptr<ConjunctionRule> ConjunctionRule::createRule(RuleResult result)
+{
+    switch (result)
+    {
+        case RuleResult::INTRODUCTION:
+            return createIntroductionRule();
+        case RuleResult::ELIMINATION:
+            return createEliminationRule();
+        default:
+            throw std::invalid_argument("Invalid rule result");
+    }
+}
+
+std::unique_ptr<ConjunctionRule> ConjunctionRule::createIntroductionRule()
+{
+    std::cout << "Enter the conjunction formula:" << std::endl;
+    std::string conjunctionString;
+    std::cin >> conjunctionString;
+    auto conjunction = std::shared_ptr<Formula>(FormulaFactory::createFormula(conjunctionString));
+    return std::make_unique<ConjunctionRule>(RuleResult::INTRODUCTION, std::vector{conjunction});
+}
+
+std::unique_ptr<ConjunctionRule> ConjunctionRule::createEliminationRule()
+{
+    std::cout << "Enter the conjunction formula:" << std::endl;
+    std::string conjunctionString;
+    std::cin >> conjunctionString;
+    auto conjunction = std::shared_ptr<Formula>(FormulaFactory::createFormula(conjunctionString));
+
+    std::cout << "Enter the result:" << std::endl;
+    std::string resultString;
+    std::cin >> resultString;
+    auto result = std::shared_ptr<Formula>(FormulaFactory::createFormula(resultString));
+    return std::make_unique<ConjunctionRule>(RuleResult::INTRODUCTION, std::vector{conjunction, result});
+}
+
